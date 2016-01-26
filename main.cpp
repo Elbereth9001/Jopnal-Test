@@ -56,6 +56,16 @@ private:
             : jop::Component(object, ID)
         {}
 
+        SomeComponent(const SomeComponent& other)
+            : jop::Component(other)
+        {}
+
+        SomeComponent* clone() const override
+        {
+            auto ptr = std::make_unique<SomeComponent>(*this);
+            return ptr.release();
+        }
+
         void sendMessage(const std::string& message, void*) override
         {
             if (message.find("print") != std::string::npos)
