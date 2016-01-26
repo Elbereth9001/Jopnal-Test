@@ -52,7 +52,9 @@ private:
     {
     public:
 
-        SomeComponent(){}
+        SomeComponent(jop::Object& object, const std::string& ID)
+            : jop::Component(object, ID)
+        {}
 
         void sendMessage(const std::string& message, void*) override
         {
@@ -68,7 +70,7 @@ public:
         : jop::Scene("SomeScene"),
           m_counter(0.0)
     {
-        createObject("SomeObject").createComponent<SomeComponent>();
+        createObject("SomeObject").createComponent<SomeComponent>("SomeComponent");
     }
 
 
@@ -91,7 +93,7 @@ private:
 int main(int c, char** v)
 {
     jop::Engine e("JopTestProject", c , v);
-    e.loadDefaultSubsystems();
+    e.loadDefaultConfiguration();
 
     auto& w = static_cast<jop::Window&>(*e.getSubsystem("Window"));
     w.setEventHandler<EventHandler>();
