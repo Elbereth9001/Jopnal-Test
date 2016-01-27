@@ -80,6 +80,7 @@ public:
         : jop::Scene("SomeScene"),
           m_counter(0.0)
     {
+        createLayer<jop::Layer>("asdf");
         createObject("SomeObject").createComponent<SomeComponent>("SomeComponent");
     }
 
