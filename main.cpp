@@ -81,7 +81,10 @@ public:
           m_counter(0.0)
     {
         createLayer<jop::Layer>("asdf");
-        createObject("SomeObject").createComponent<SomeComponent>("SomeComponent");
+        getLayer<jop::Layer>();
+        auto& o = createObject("SomeObject");
+        o.createComponent<SomeComponent>("SomeComponent");
+        o.getComponent<SomeComponent>();
     }
 
 
@@ -106,7 +109,7 @@ int main(int c, char** v)
     jop::Engine e("JopTestProject", c , v);
     e.loadDefaultConfiguration();
 
-    auto& w = static_cast<jop::Window&>(*e.getSubsystem("Window"));
+    auto& w = *e.getSubsystem<jop::Window>();
     w.setEventHandler<EventHandler>();
 
     e.createScene<SomeScene>();
