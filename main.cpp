@@ -66,10 +66,12 @@ private:
             return ptr.release();
         }
 
-        void sendMessage(const std::string& message, void*) override
+        jop::MessageResult sendMessage(const std::string& message, void*) override
         {
             if (message.find("print") != std::string::npos)
                 JOP_DEBUG_INFO("Message received!");
+
+            return jop::MessageResult::Escape;
         }
 
     };
