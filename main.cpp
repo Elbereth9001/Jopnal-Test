@@ -106,10 +106,84 @@ private:
     double m_counter;
 };
 
+void printer(char c,
+             unsigned char uc,
+             unsigned int ui,
+             int i,
+             unsigned long ul,
+             long l,
+             unsigned long long ull,
+             long long ll,
+             float f,
+             double d,
+             long double ld,
+             const std::string& str,
+             std::reference_wrapper<int> ref)
+{
+    JOP_DEBUG_INFO(c << uc << ui << i << ul << l << ull << ll << f << d << ld << str << ref.get());
+    ref.get() = 1;
+    //return 999;
+}
+
+class Class
+{
+public:
+
+    int print(int i, long l, const std::string& str, std::reference_wrapper<int> ptr)
+    {
+        JOP_DEBUG_INFO(i << l << str);
+        ptr.get() = 123;
+        return 0;
+    }
+
+    void otherPrint()
+    {
+        //JOP_DEBUG_INFO(a << b);
+    }
+
+    static void useless()
+    {
+        //return 0;
+    }
+
+};
+
+JOP_REGISTER_COMMAND_HANDLER(Class)
+
+    JOP_BIND_MEMBER_COMMAND(Class::print, "print")
+    JOP_BIND_MEMBER_COMMAND(Class::otherPrint, "print2")
+    JOP_BIND_COMMAND(Class::useless, "useless")
+
+JOP_END_COMMAND_HANDLER(Class)
+
 int main(int c, char** v)
 {
     jop::Engine e("JopTestProject", c , v);
     e.loadDefaultConfiguration();
+
+    int iref = 0;
+    std::stringstream ss;
+    ss << std::hex << &iref;
+    jop::CommandHandler h;
+
+    {
+        h.bind("print", printer);
+
+        int ret = 0;
+
+        h.execute("print a b 123 123 123 123 123 123 123.0 123.0 123.0 asdf " + ss.str(), &ret);
+        //printer('a', 'b', 123, 123, 123, 123, 123, 123, 123.0, 123.0, 123.0, "asdf", iref);
+    }
+
+    {
+        
+        Class test;
+        //jop::detail::VoidWrapper wrap(&test);
+        //h.bindMember("print", &Class::print);
+        h.executeMember("print 1 2 asdf " + ss.str(), &test, nullptr);
+        JOP_EXECUTE_MEMBER_COMMAND(Class, "print 1 2 asdf " + ss.str(), test, &iref);
+        JOP_EXECUTE_MEMBER_COMMAND(Class, "print2 1 3", test, &iref);
+    }
 
     auto& w = *e.getSubsystem<jop::Window>();
     w.setEventHandler<EventHandler>();
