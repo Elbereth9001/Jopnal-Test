@@ -114,6 +114,9 @@ int main(int c, char* v[])
     auto& w = *e.getSubsystem<jop::Window>();
     w.setEventHandler<EventHandler>();
 
+    auto& r = *e.getSubsystem<jop::ResourceManager>();
+    r.getResource<jop::Shader>("v;Shaders/v.vert|f;Shaders/f.frag");
+
     e.createScene<SomeScene>();
 
     return e.runMainLoop();
