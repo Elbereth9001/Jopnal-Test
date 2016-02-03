@@ -106,16 +106,39 @@ private:
     double m_counter;
 };
 
+struct Test
+{
+    int mem()
+    {
+        JOP_DEBUG_INFO("mem");
+        return 1;
+    }
+};
+
+int freef()
+{
+    JOP_DEBUG_INFO("freef");
+    return 0;
+}
+
 int main(int c, char* v[])
 {
+
     jop::Engine e("JopTestProject", c , v);
     e.loadDefaultConfiguration();
+    int ret;
+    jop::CommandHandler h;
+    h.bind("freef", &freef);
+    h.bindMember("mem", &Test::mem);
+    h.execute("freef", nullptr, &ret);
+    Test t;
+    h.execute("mem", &t, &ret);
 
     auto& w = *e.getSubsystem<jop::Window>();
     w.setEventHandler<EventHandler>();
 
-    auto& r = *e.getSubsystem<jop::ResourceManager>();
-    r.getResource<jop::Shader>("v;Shaders/v.vert|f;Shaders/f.frag");
+    //auto& r = *e.getSubsystem<jop::ResourceManager>();
+    //r.getResource<jop::Shader>("v;Shaders/v.vert|f;Shaders/f.frag");
 
     e.createScene<SomeScene>();
 
