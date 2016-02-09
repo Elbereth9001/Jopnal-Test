@@ -29,8 +29,7 @@ public:
 
     void preUpdate(const double dt) override
     {
-        static float sine = 0;
-        sine += dt * 4;
+        const float sine = jop::Engine::getTotalTime()  * 4;
 
         getObject("Def").lock()->rotate(0, dt, 0);
         getObject("Def").lock()->getChild("Rotator").lock()->rotate(0, 0, -dt * 2);
