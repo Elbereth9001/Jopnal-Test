@@ -1,6 +1,17 @@
 #include <Jopnal/Jopnal.hpp>
 
 
+class SomeComponent : public jop::Component
+{
+public:
+
+    SomeComponent(jop::Object& obj)
+        : jop::Component(obj, "")
+    {}
+
+    JOP_GENERIC_CLONE(SomeComponent)
+};
+
 class SomeScene : public jop::Scene
 {
 public:
@@ -12,22 +23,26 @@ public:
     void initialize() override
     {
         auto& obj = createObject("Def");
-        obj.createComponent<jop::DefaultDrawable>(getDefaultLayer(), "DefDrawable").setTexture(*jop::ResourceManager::getResource<jop::Texture>("earthmap1k.jpg").lock());
-        obj.getComponent<jop::DefaultDrawable>().lock()->setModel(*jop::ResourceManager::getNamedResource<jop::SphereModel>("Ball", 1.f, 20, 20).lock());
-        obj.setPosition(0, 0, -3);
+        obj.createComponent<jop::GenericDrawable>("defc");
+        obj.getComponent<jop::GenericDrawable>().lock()->setModel(jop::ResourceManager::getNamedResource<jop::SphereModel>("Ball", 1.f, 20, 20));
 
+        jop::Material def = jop::Material::getDefault();
+        def.setMap(jop::Material::Map::Diffuse, jop::ResourceManager::getResource<jop::Texture>("asdf"));
+        jop::ResourceManager::getExistingResource<jop::SphereModel>("Ball").setMaterial(def);
+        obj.setPosition(0, 0, -3);
+        obj.createComponent<SomeComponent>();
         auto& rotator = obj.createChild("Rotator");
 
         auto& left = rotator.createChild("Left");
         auto& right = rotator.createChild("Right");
-        left.createComponent<jop::DefaultDrawable>("DefDrawable");
-
-        right.createComponent<jop::DefaultDrawable>("DefDrawable");
+        left.createComponent<jop::GenericDrawable>("DefDrawable");
+        
+        right.createComponent<jop::GenericDrawable>("DefDrawable");
         left.setPosition(-1.5, 0, 0).setScale(0.5f);
         right.setPosition(1.5, 0, 0).setScale(0.5f);
     }
 
-    void preUpdate(const double dt) override
+    void preUpdate(const float dt) override
     {
         const float sine = jop::Engine::getTotalTime()  * 4;
 
@@ -42,7 +57,20 @@ int main(int c, char* v[])
 {
     jop::Engine e("JopTestProject", c , v);
     e.loadDefaultConfiguration();
-    
+
+    struct EventHandler : jop::WindowEventHandler
+    {
+        EventHandler(jop::Window& w)
+            : jop::WindowEventHandler(w)
+        {}
+
+        void closed() override
+        {
+            jop::Engine::exit();
+        }
+    };
+
+    e.getSubsystem<jop::Window>()->setEventHandler<EventHandler>();
 
     e.createScene<SomeScene>();
 
