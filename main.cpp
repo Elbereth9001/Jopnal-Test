@@ -44,12 +44,12 @@ public:
 
     void preUpdate(const float dt) override
     {
-        const float sine = jop::Engine::getTotalTime()  * 4;
+        const float sine = static_cast<float>(jop::Engine::getTotalTime()) * 4.f;
 
-        getObject("Def").lock()->rotate(0, dt, 0);
-        getObject("Def").lock()->getChild("Rotator").lock()->rotate(0, 0, -dt * 2);
-        getObject("Def").lock()->getChild("Rotator").lock()->getChild("Left").lock()->setScale(0.3 * std::abs(std::sin(sine)) + 0.2);
-        getObject("Def").lock()->getChild("Rotator").lock()->getChild("Right").lock()->setScale(0.3 * std::abs(std::sin(sine)) + 0.2);
+        getObject("Def").lock()->rotate(0.f, dt, 0.f);
+        getObject("Def").lock()->getChild("Rotator").lock()->rotate(0.f, 0.f, -dt * 2.f);
+        getObject("Def").lock()->getChild("Rotator").lock()->getChild("Left").lock()->setScale(0.3f * std::abs(std::sin(sine)) + 0.2f);
+        getObject("Def").lock()->getChild("Rotator").lock()->getChild("Right").lock()->setScale(0.3f * std::abs(std::sin(sine)) + 0.2f);
     }
 };
 
