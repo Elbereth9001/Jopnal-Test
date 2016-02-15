@@ -22,13 +22,14 @@ public:
 
     void initialize() override
     {
-        auto& obj = createObject("Def");
-        obj.createComponent<jop::GenericDrawable>("defc");
-        obj.getComponent<jop::GenericDrawable>().lock()->setModel(jop::ResourceManager::getNamedResource<jop::SphereModel>("Ball", 1.f, 20, 20));
-
         jop::Material def = jop::Material::getDefault();
         def.setMap(jop::Material::Map::Diffuse, jop::ResourceManager::getResource<jop::Texture>("asdf"));
-        jop::ResourceManager::getExistingResource<jop::SphereModel>("Ball").setMaterial(def);
+
+        auto& obj = createObject("Def");
+        obj.createComponent<jop::GenericDrawable>("defc");
+        obj.getComponent<jop::GenericDrawable>().lock()->setModel(jop::Model(jop::ResourceManager::getNamedResource<jop::SphereMesh>("Ball", 1.f, 20, 20), def));
+
+
         obj.setPosition(0, 0, -3);
         obj.createComponent<SomeComponent>();
         auto& rotator = obj.createChild("Rotator");
