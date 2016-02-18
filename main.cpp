@@ -35,14 +35,12 @@ public:
 
     void initialize() override
     {
-        /*jop::Material def = jop::Material::getDefault();
+        jop::Material def = jop::Material::getDefault();
         def.setMap(jop::Material::Map::Diffuse, jop::ResourceManager::getResource<jop::Texture>("asdf"));
 
         auto& obj = createObject("Def");
         obj.createComponent<jop::GenericDrawable>(getDefaultLayer(), "defc");
         obj.getComponent<jop::GenericDrawable>().lock()->setModel(jop::Model(jop::ResourceManager::getNamedResource<jop::SphereMesh>("Ball", 1.f, 20, 20), def));
-        */jop::ResourceManager::getNamedResource<jop::SphereMesh>("Ball", 1.f, 20, 20);/*
-
 
         obj.setPosition(0, 0, -3);
         obj.createComponent<SomeComponent>();
@@ -54,11 +52,11 @@ public:
         
         right.createComponent<jop::GenericDrawable>(getDefaultLayer(), "DefDrawable");
         left.setPosition(-1.5, 0, 0).setScale(0.5f);
-        right.setPosition(1.5, 0, 0).setScale(0.5f);*/
+        right.setPosition(1.5, 0, 0).setScale(0.5f);
 
-        //jop::Object().createComponent<jop::GenericDrawable>("a");
+        jop::Object().createComponent<jop::GenericDrawable>("a");
 
-        jop::StateLoader::getInstance().loadState("Scene/test");
+        jop::StateLoader::getInstance().saveState("Scene/test", true, true);
     }
 
     void preUpdate(const float dt) override
