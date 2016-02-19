@@ -56,7 +56,8 @@ public:
 
         jop::Object().createComponent<jop::GenericDrawable>("a");
 
-        jop::StateLoader::getInstance().saveState("Scene/test", true, true);
+        if (!jop::StateLoader::getInstance().saveState("Scene/test", true, true, true))
+            jop::Engine::exit();
     }
 
     void preUpdate(const float dt) override
