@@ -19,7 +19,7 @@ JOP_REGISTER_LOADABLE(a, SomeComponent)[](jop::Object& o, const jop::Scene&, con
 }
 JOP_END_LOADABLE_REGISTRATION(SomeComponent)
 
-JOP_REGISTER_SAVEABLE(a, SomeComponent)[](const jop::Component& c, jop::json::Value& v, jop::json::Value::AllocatorType&a) -> bool
+JOP_REGISTER_SAVEABLE(a, SomeComponent)[](const jop::Component& c, jop::json::Value& v, jop::json::Value::AllocatorType& a) -> bool
 {
     return true;
 }
@@ -49,14 +49,17 @@ public:
         auto& left = rotator.createChild("Left");
         auto& right = rotator.createChild("Right");
         left.createComponent<jop::GenericDrawable>(getDefaultLayer(), "DefDrawable");
-        
+
         right.createComponent<jop::GenericDrawable>(getDefaultLayer(), "DefDrawable");
         left.setPosition(-1.5, 0, 0).setScale(0.5f);
         right.setPosition(1.5, 0, 0).setScale(0.5f);
 
         jop::Object().createComponent<jop::GenericDrawable>("a");
 
-        if (!jop::StateLoader::getInstance().saveState("Scene/test", true, true, true))
+        /*if (!jop::StateLoader::saveState("Scene/test", true, true, true))
+            jop::Engine::exit();*/
+
+            if (!jop::StateLoader::getInstance().loadState("Scene/test", true, true, true))
             jop::Engine::exit();
     }
 
@@ -69,6 +72,12 @@ public:
         getObject("Def").lock()->getChild("Rotator").lock()->getChild("Left").lock()->setScale(0.3f * std::abs(std::sin(sine)) + 0.2f);
         getObject("Def").lock()->getChild("Rotator").lock()->getChild("Right").lock()->setScale(0.3f * std::abs(std::sin(sine)) + 0.2f);
 
+    }
+
+    int getInt(float& a, float b) const
+    {
+        a = 0.f;
+        return 1;
     }
 };
 
@@ -87,6 +96,12 @@ JOP_REGISTER_SAVEABLE(a, SomeScene)[](const jop::Scene& s, jop::json::Value& v, 
     return true;
 }
 JOP_END_SAVEABLE_REGISTRATION(SomeScene)
+
+JOP_REGISTER_COMMAND_HANDLER(SomeScene)
+
+    JOP_BIND_MEMBER_COMMAND(&SomeScene::getInt, "getInt");
+
+JOP_END_COMMAND_HANDLER(SomeScene)
 
 int main(int c, char* v[])
 {
@@ -111,9 +126,19 @@ int main(int c, char* v[])
         }
     };
 
+    jop::ResourceManager::getResource<jop::Texture>("asdf");
+
     e.getSubsystem<jop::Window>()->setEventHandler<EventHandler>();
 
-    e.createScene<SomeScene>();
+    auto& s = e.createScene<SomeScene>();
+
+    float a = 1.f;
+    std::stringstream ss;
+    ss << std::hex << &a;
+
+    jop::Any wrap(0);
+    jop::Any inst(&s);
+    JOP_EXECUTE_COMMAND(SomeScene, "getInt " + ss.str(), inst, wrap);
 
     return e.runMainLoop();
 }
