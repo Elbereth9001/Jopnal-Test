@@ -97,12 +97,6 @@ JOP_REGISTER_SAVEABLE(a, SomeScene)[](const jop::Scene& s, jop::json::Value& v, 
 }
 JOP_END_SAVEABLE_REGISTRATION(SomeScene)
 
-JOP_REGISTER_COMMAND_HANDLER(SomeScene)
-
-    JOP_BIND_MEMBER_COMMAND(&SomeScene::getInt, "getInt");
-
-JOP_END_COMMAND_HANDLER(SomeScene)
-
 int main(int c, char* v[])
 {
     jop::Engine e("JopTestProject", c , v);
@@ -130,15 +124,7 @@ int main(int c, char* v[])
 
     e.getSubsystem<jop::Window>()->setEventHandler<EventHandler>();
 
-    auto& s = e.createScene<SomeScene>();
-
-    float a = 1.f;
-    std::stringstream ss;
-    ss << std::hex << &a;
-
-    jop::Any wrap(0);
-    jop::Any inst(&s);
-    JOP_EXECUTE_COMMAND(SomeScene, "getInt " + ss.str(), inst, wrap);
+    e.createScene<SomeScene>();
 
     return e.runMainLoop();
 }
