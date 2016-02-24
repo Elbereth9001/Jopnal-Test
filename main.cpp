@@ -10,7 +10,22 @@ public:
     {}
 
     JOP_GENERIC_CLONE(SomeComponent)
+
+    void func(){i = 0;}
+
+private:
+
+    int i;
 };
+
+namespace jop
+{
+    JOP_DERIVED_COMMAND_HANDLER(Component, SomeComponent)
+    
+        JOP_BIND_MEMBER_COMMAND(&SomeComponent::func, "func");
+    
+    JOP_END_COMMAND_HANDLER(SomeComponent)
+}
 
 JOP_REGISTER_LOADABLE(a, SomeComponent)[](jop::Object& o, const jop::Scene&, const jop::json::Value&)
 {
@@ -19,7 +34,7 @@ JOP_REGISTER_LOADABLE(a, SomeComponent)[](jop::Object& o, const jop::Scene&, con
 }
 JOP_END_LOADABLE_REGISTRATION(SomeComponent)
 
-JOP_REGISTER_SAVEABLE(a, SomeComponent)[](const jop::Component& c, jop::json::Value& v, jop::json::Value::AllocatorType& a) -> bool
+JOP_REGISTER_SAVEABLE(a, SomeComponent)[](const jop::Component&, jop::json::Value&, jop::json::Value::AllocatorType&) -> bool
 {
     return true;
 }
@@ -40,26 +55,21 @@ public:
 
         auto& obj = createObject("Def");
         obj.createComponent<jop::GenericDrawable>(getDefaultLayer(), "defc");
-        obj.getComponent<jop::GenericDrawable>().lock()->setModel(jop::Model(jop::ResourceManager::getNamedResource<jop::SphereMesh>("Ball", 1.f, 20, 20), def));
+        obj.getComponent<jop::GenericDrawable>()->setModel(jop::Model(jop::ResourceManager::getNamedResource<jop::SphereMesh>("Ball", 1.f, 20, 20), def));
 
         obj.setPosition(0, 0, -3);
         obj.createComponent<SomeComponent>();
         auto& rotator = obj.createChild("Rotator");
 
         auto& left = rotator.createChild("Left");
-        auto& right = rotator.createChild("Right");
         left.createComponent<jop::GenericDrawable>(getDefaultLayer(), "DefDrawable");
-
-        right.createComponent<jop::GenericDrawable>(getDefaultLayer(), "DefDrawable");
         left.setPosition(-1.5, 0, 0).setScale(0.5f);
+
+        auto& right = rotator.createChild("Right");
+        right.createComponent<jop::GenericDrawable>(getDefaultLayer(), "DefDrawable");
         right.setPosition(1.5, 0, 0).setScale(0.5f);
 
-        jop::Object().createComponent<jop::GenericDrawable>("a");
-
-        /*if (!jop::StateLoader::saveState("Scene/test", true, true, true))
-            jop::Engine::exit();*/
-
-            if (!jop::StateLoader::getInstance().loadState("Scene/test", true, true, true))
+        if (!jop::StateLoader::saveState("Scene/test", true, true, true))
             jop::Engine::exit();
     }
 
@@ -67,17 +77,14 @@ public:
     {
         const float sine = static_cast<float>(jop::Engine::getTotalTime()) * 4.f;
 
-        getObject("Def").lock()->rotate(0.f, dt, 0.f);
-        getObject("Def").lock()->getChild("Rotator").lock()->rotate(0.f, 0.f, -dt * 2.f);
-        getObject("Def").lock()->getChild("Rotator").lock()->getChild("Left").lock()->setScale(0.3f * std::abs(std::sin(sine)) + 0.2f);
-        getObject("Def").lock()->getChild("Rotator").lock()->getChild("Right").lock()->setScale(0.3f * std::abs(std::sin(sine)) + 0.2f);
+        getObject("Def")->rotate(0.f, dt, 0.f);
+        getObject("Def")->getChild("Rotator")->rotate(0.f, 0.f, -dt * 2.f);
 
-    }
+        auto l = getObject("Def")->getChild("Rotator")->getChild("Left");
+        auto r = getObject("Def")->getChild("Rotator")->getChild("Right");
 
-    int getInt(float& a, float b) const
-    {
-        a = 0.f;
-        return 1;
+        l->setScale(0.3f * std::abs(std::sin(sine)) + 0.2f);
+        r->setScale(0.3f * std::abs(std::sin(sine)) + 0.2f);
     }
 };
 
@@ -125,6 +132,8 @@ int main(int c, char* v[])
     e.getSubsystem<jop::Window>()->setEventHandler<EventHandler>();
 
     e.createScene<SomeScene>();
+
+    jop::broadcast("func");
 
     return e.runMainLoop();
 }
