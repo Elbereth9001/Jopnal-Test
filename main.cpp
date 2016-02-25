@@ -10,22 +10,7 @@ public:
     {}
 
     JOP_GENERIC_CLONE(SomeComponent)
-
-    void func(){i = 0;}
-
-private:
-
-    int i;
 };
-
-namespace jop
-{
-    JOP_DERIVED_COMMAND_HANDLER(Component, SomeComponent)
-    
-        JOP_BIND_MEMBER_COMMAND(&SomeComponent::func, "func");
-    
-    JOP_END_COMMAND_HANDLER(SomeComponent)
-}
 
 JOP_REGISTER_LOADABLE(a, SomeComponent)[](jop::Object& o, const jop::Scene&, const jop::json::Value&)
 {
@@ -133,7 +118,8 @@ int main(int c, char* v[])
 
     e.createScene<SomeScene>();
 
-    jop::broadcast("func");
+    for (int i = 1; i <= jop::Material::DefaultAttributes; ++i)
+        JOP_ASSERT(&jop::ShaderManager::getShader(i) != &jop::Shader::getDefault(), "aaa");
 
     return e.runMainLoop();
 }
