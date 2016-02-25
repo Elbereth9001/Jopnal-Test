@@ -53,21 +53,21 @@ public:
         jop::Material def = jop::Material::getDefault();
         def.setMap(jop::Material::Map::Diffuse, jop::ResourceManager::getResource<jop::Texture>("asdf"));
 
-        auto& obj = createObject("Def");
-        obj.createComponent<jop::GenericDrawable>(getDefaultLayer(), "defc");
-        obj.getComponent<jop::GenericDrawable>()->setModel(jop::Model(jop::ResourceManager::getNamedResource<jop::SphereMesh>("Ball", 1.f, 20, 20), def));
+        auto obj = createObject("Def");
+        obj->createComponent<jop::GenericDrawable>(*getDefaultLayer(), "defc");
+        obj->getComponent<jop::GenericDrawable>()->setModel(jop::Model(jop::ResourceManager::getNamedResource<jop::SphereMesh>("Ball", 1.f, 20, 20), def));
 
-        obj.setPosition(0, 0, -3);
-        obj.createComponent<SomeComponent>();
-        auto& rotator = obj.createChild("Rotator");
+        obj->setPosition(0, 0, -3);
+        obj->createComponent<SomeComponent>();
+        auto rotator = obj->createChild("Rotator");
 
-        auto& left = rotator.createChild("Left");
-        left.createComponent<jop::GenericDrawable>(getDefaultLayer(), "DefDrawable");
-        left.setPosition(-1.5, 0, 0).setScale(0.5f);
+        auto left = rotator->createChild("Left");
+        left->createComponent<jop::GenericDrawable>(*getDefaultLayer(), "DefDrawable");
+        left->setPosition(-1.5, 0, 0).setScale(0.5f);
 
-        auto& right = rotator.createChild("Right");
-        right.createComponent<jop::GenericDrawable>(getDefaultLayer(), "DefDrawable");
-        right.setPosition(1.5, 0, 0).setScale(0.5f);
+        auto right = rotator->createChild("Right");
+        right->createComponent<jop::GenericDrawable>(*getDefaultLayer(), "DefDrawable");
+        right->setPosition(1.5, 0, 0).setScale(0.5f);
 
         if (!jop::StateLoader::saveState("Scene/test", true, true, true))
             jop::Engine::exit();
