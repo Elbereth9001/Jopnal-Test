@@ -35,32 +35,20 @@ public:
 
     void initialize() override
     {
-        //auto attribs = jop::Material::DefaultAttributes;
-        auto attribs = jop::Material::Attribute::AmbientConstant | jop::Material::Attribute::Diffusemap | jop::Material::Attribute::Phong;
+        auto attribs = jop::Material::DefaultAttributes;
         jop::Material def(attribs);
-        def.setShininess(5.f);
-        //def.setReflection(jop::Material::Reflection::Ambient, jop::Color::Green);
-        //def.setMap(jop::Material::Map::Diffuse, jop::ResourceManager::getResource<jop::Texture>("asdf"));
+        def.setShininess(128.f);
         
         auto obj = createObject("Def");
-        obj->createComponent<jop::GenericDrawable>(*getDefaultLayer(), "defc")->setShader(jop::ShaderManager::getShader(attribs));
-        obj->getComponent<jop::GenericDrawable>()->setModel(jop::Model(jop::ResourceManager::getNamedResource<jop::SphereMesh>("Ball", 1.f, 20, 20), def));
-
-        obj->setPosition(0, 0, -3);
-        obj->createComponent<SomeComponent>();
-        auto rotator = obj->createChild("Rotator");
-
-        auto left = rotator->createChild("Left")->createComponent<jop::LightSource>("Light");
-        left->setAttenuation(1.f, 0.7f, 1.8f, 5.f);
-        //left->setType(jop::LightSource::Type::Point);
-        //rotator->createChild("Left")->createComponent<jop::GenericDrawable>(*getDefaultLayer(), "DefDrawable");
-        rotator->createChild("Left")->setPosition(-10000.5, 0, -3);
+        obj->createComponent<jop::GenericDrawable>(*getDefaultLayer(), "BoxDrawable")
+           ->setShader(jop::ShaderManager::getShader(attribs))
+           .setModel(jop::Model(jop::ResourceManager::getNamedResource<jop::SphereMesh>("Ball", 1.f, 30, 30)/*jop::Mesh::getDefault()*/, def));
+        obj->setPosition(0, -0.2f, -4);
         
-        getDefaultLayer()->addLight(*left);
-
-        //auto right = rotator->createChild("Right");
-        //right->createComponent<jop::GenericDrawable>(*getDefaultLayer(), "DefDrawable");
-        //right->setPosition(1.5, 0, 0).setScale(0.5f);
+        createObject("LightCaster");
+        getDefaultLayer()->addLight(*getObject("LightCaster")->createComponent<jop::LightSource>("LC")/*->setIntensity(jop::LightSource::Intensity::Diffuse, jop::Color(0.f, 128.f, 200.f))*/);
+        getObject("LightCaster")->createComponent<jop::GenericDrawable>(*getDefaultLayer(), "ASDF");
+        getObject("LightCaster")->setPosition(1.5f, 0.f, -3.f).setScale(0.3f);
 
         if (!jop::StateLoader::saveState("Scene/test", true, true, true))
             jop::Engine::exit();
@@ -68,16 +56,9 @@ public:
 
     void preUpdate(const float dt) override
     {
-        const float sine = static_cast<float>(jop::Engine::getTotalTime()) * 4.f;
-
         getObject("Def")->rotate(0.f, dt, 0.f);
-        //getObject("Def")->getChild("Rotator")->rotate(0.f, 0.f, -dt * 2.f);
 
-        ///*auto l = */getObject("Def")->getChild("Rotator")->getChild("Left")->move(2.f * dt * std::sin(sine), 2.f * dt * std::sin(sine), 0.f);
-        //auto r = getObject("Def")->getChild("Rotator")->getChild("Right");
-
-        //l->setScale(0.3f * std::abs(std::sin(sine)) + 0.2f);
-        //r->setScale(0.3f * std::abs(std::sin(sine)) + 0.2f);
+        getObject("LightCaster")->move(0.f, 2 * dt * std::sin(8.f * static_cast<float>(jop::Engine::getTotalTime())), 2* dt * std::sin(4.f * static_cast<float>(jop::Engine::getTotalTime())));
     }
 };
 
@@ -128,6 +109,8 @@ int main(int c, char* v[])
 
     //for (int i = 1; i <= jop::Material::DefaultAttributes; ++i)
     //    JOP_ASSERT(&jop::ShaderManager::getShader(i) != &jop::Shader::getDefault(), "aaa");
+    if (&jop::ShaderManager::getShader(jop::Material::DefaultAttributes) == &jop::Shader::getDefault())
+        return EXIT_FAILURE;
 
     return e.runMainLoop();
 }
