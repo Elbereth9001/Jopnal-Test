@@ -53,19 +53,16 @@ public:
         cloneObject("Def2", "Def3")->setPosition(- 5, -2, -10).rotate(54, 70, 1);
         
         createObject("LightCaster");//->setActive(false);
-        getDefaultLayer()->addLight(*getObject("LightCaster")->createComponent<jop::LightSource>("LC"));
+        getObject("LightCaster")->createComponent<jop::LightSource>(*getDefaultLayer(), "LC");
         getObject("LightCaster")->getComponent<jop::LightSource>()->setAttenuation(0.1f, 0.3f, 0.3f, 10);
         getObject("LightCaster")->createComponent<jop::GenericDrawable>(*getDefaultLayer(), "ASDF");
         getObject("LightCaster")->setPosition(1.5f, 0.f, -3.f).setScale(0.3f);
 
-        createObject("DirLight")->createComponent<jop::LightSource>("LS")->setType(jop::LightSource::Type::Directional);
+        createObject("DirLight")->createComponent<jop::LightSource>(*getDefaultLayer(), "LS")->setType(jop::LightSource::Type::Directional);
         //getObject("DirLight")->setActive(false);
 
-        createObject("SpotLight")->createComponent<jop::LightSource>("SP")->setType(jop::LightSource::Type::Spot).setAttenuation(jop::LightSource::AttenuationPreset::_320).setCutoff(glm::radians(10.f), glm::radians(12.f));
+        createObject("SpotLight")->createComponent<jop::LightSource>(*getDefaultLayer(), "SP")->setType(jop::LightSource::Type::Spot).setAttenuation(jop::LightSource::AttenuationPreset::_320).setCutoff(glm::radians(10.f), glm::radians(12.f));
         getObject("SpotLight")->rotate(0, glm::radians(-20.f), 0);
-        getDefaultLayer()->addLight(*getObject("SpotLight")->getComponent<jop::LightSource>());
-
-        getDefaultLayer()->addLight(*getObject("DirLight")->getComponent<jop::LightSource>());
 
         if (!jop::StateLoader::saveState("Scene/test", true, true, true))
             jop::Engine::exit();
