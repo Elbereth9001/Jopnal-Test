@@ -37,18 +37,35 @@ public:
     {
         auto attribs = jop::Material::DefaultAttributes;
         jop::Material def(attribs);
+        def.setMap(jop::Material::Map::Diffuse, jop::ResourceManager::getResource<jop::Texture>("container2.png"));
+        def.setMap(jop::Material::Map::Specular, jop::ResourceManager::getResource<jop::Texture>("container2_specular.png"));
+        def.setMap(jop::Material::Map::Emission, jop::ResourceManager::getResource<jop::Texture>("matrix.jpg"));
         def.setShininess(128.f);
+        def.setReflection(jop::Material::Reflection::Emission, jop::Color::Black);
         
         auto obj = createObject("Def");
         obj->createComponent<jop::GenericDrawable>(*getDefaultLayer(), "BoxDrawable")
            ->setShader(jop::ShaderManager::getShader(attribs))
-           .setModel(jop::Model(jop::ResourceManager::getNamedResource<jop::SphereMesh>("Ball", 1.f, 30, 30)/*jop::Mesh::getDefault()*/, def));
-        obj->setPosition(0, -0.2f, -4);
+           .setModel(jop::Model(/*jop::ResourceManager::getNamedResource<jop::SphereMesh>("Ball", 1.f, 30, 30)*/jop::Mesh::getDefault(), def));
+        obj->setPosition(0.5, -0.2f, -4);
+
+        cloneObject("Def", "Def2")->setPosition(-5.f, 0, -10).rotate(-45, 45, 0);
+        cloneObject("Def2", "Def3")->setPosition(- 5, -2, -10).rotate(54, 70, 1);
         
-        createObject("LightCaster");
-        getDefaultLayer()->addLight(*getObject("LightCaster")->createComponent<jop::LightSource>("LC")/*->setIntensity(jop::LightSource::Intensity::Diffuse, jop::Color(0.f, 128.f, 200.f))*/);
+        createObject("LightCaster");//->setActive(false);
+        getDefaultLayer()->addLight(*getObject("LightCaster")->createComponent<jop::LightSource>("LC"));
+        getObject("LightCaster")->getComponent<jop::LightSource>()->setAttenuation(0.1f, 0.3f, 0.3f, 10);
         getObject("LightCaster")->createComponent<jop::GenericDrawable>(*getDefaultLayer(), "ASDF");
         getObject("LightCaster")->setPosition(1.5f, 0.f, -3.f).setScale(0.3f);
+
+        createObject("DirLight")->createComponent<jop::LightSource>("LS")->setType(jop::LightSource::Type::Directional);
+        //getObject("DirLight")->setActive(false);
+
+        createObject("SpotLight")->createComponent<jop::LightSource>("SP")->setType(jop::LightSource::Type::Spot).setAttenuation(jop::LightSource::AttenuationPreset::_320).setCutoff(glm::radians(10.f), glm::radians(12.f));
+        getObject("SpotLight")->rotate(0, glm::radians(-20.f), 0);
+        getDefaultLayer()->addLight(*getObject("SpotLight")->getComponent<jop::LightSource>());
+
+        getDefaultLayer()->addLight(*getObject("DirLight")->getComponent<jop::LightSource>());
 
         if (!jop::StateLoader::saveState("Scene/test", true, true, true))
             jop::Engine::exit();
@@ -56,7 +73,14 @@ public:
 
     void preUpdate(const float dt) override
     {
-        getObject("Def")->rotate(0.f, dt, 0.f);
+        getObject("Def")->rotate(0.f, dt / 8, dt / 4);
+
+        getObject("DirLight")->rotate(0.f, dt, 0.f);
+        getObject("SpotLight")->rotate(0.f, std::sin(jop::Engine::getTotalTime() * 5) * dt / 2, 0.f);
+
+        const jop::uint8 col = static_cast<jop::uint8>(200 * std::max(0.0, std::sin(jop::Engine::getTotalTime())));
+
+        getObject("Def")->getComponent<jop::GenericDrawable>()->getModel().getMaterial().setReflection(jop::Material::Reflection::Emission, jop::Color(col, col, col));
 
         getObject("LightCaster")->move(0.f, 2 * dt * std::sin(8.f * static_cast<float>(jop::Engine::getTotalTime())), 2* dt * std::sin(4.f * static_cast<float>(jop::Engine::getTotalTime())));
     }
