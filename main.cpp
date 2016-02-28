@@ -36,7 +36,8 @@ public:
     void initialize() override
     {
         auto attribs = jop::Material::DefaultAttributes;
-        jop::Material def(attribs);
+
+        jop::Material& def = jop::ResourceManager::getEmptyResource<jop::Material>("defmat", attribs);
         def.setMap(jop::Material::Map::Diffuse, jop::ResourceManager::getResource<jop::Texture>("container2.png"));
         def.setMap(jop::Material::Map::Specular, jop::ResourceManager::getResource<jop::Texture>("container2_specular.png"));
         def.setMap(jop::Material::Map::Emission, jop::ResourceManager::getResource<jop::Texture>("matrix.jpg"));
@@ -77,7 +78,7 @@ public:
 
         const jop::uint8 col = static_cast<jop::uint8>(200 * std::max(0.0, std::sin(jop::Engine::getTotalTime())));
 
-        getObject("Def")->getComponent<jop::GenericDrawable>()->getModel().getMaterial().setReflection(jop::Material::Reflection::Emission, jop::Color(col, col, col));
+        jop::ResourceManager::getExistingResource<jop::Material>("defmat").setReflection(jop::Material::Reflection::Emission, jop::Color(col, col, col));
 
         getObject("LightCaster")->move(0.f, 2 * dt * std::sin(8.f * static_cast<float>(jop::Engine::getTotalTime())), 2* dt * std::sin(4.f * static_cast<float>(jop::Engine::getTotalTime())));
     }
