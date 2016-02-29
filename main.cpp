@@ -47,7 +47,7 @@ public:
         auto obj = createObject("Def");
         obj->createComponent<jop::GenericDrawable>(*getDefaultLayer(), "BoxDrawable")
            ->setShader(jop::ShaderManager::getShader(attribs))
-           .setModel(jop::Model(/*jop::ResourceManager::getNamedResource<jop::SphereMesh>("Ball", 1.f, 30, 30)*/jop::Mesh::getDefault(), def));
+           .setModel(jop::Model(jop::Mesh::getDefault(), def));
         obj->setPosition(0.5, -0.2f, -4);
 
         cloneObject("Def", "Def2")->setPosition(-5.f, 0, -10).rotate(-45, 45, 0);
@@ -66,7 +66,6 @@ public:
         getObject("SpotLight")->rotate(0, glm::radians(-20.f), 0);
 
         jop::Camera::getDefault().getObject()->createComponent<jop::LightSource>(*getDefaultLayer(), "LC2")->setAttenuation(jop::LightSource::AttenuationPreset::_50);
-        //jop::Camera::getDefault().getObject()->rotate(0, glm::pi<float>(), 0);
 
         if (!jop::StateLoader::saveState("Scene/test", true, true, true))
             jop::Engine::exit();
@@ -94,17 +93,17 @@ public:
 
         const float speed = 4.f;
 
-
         if (h.keyDown(Keyboard::A) || h.keyDown(Keyboard::D))
         {
-            auto f = cam.getRight();
-            JOP_DEBUG_INFO("Right: " << f.x << ", " << f.y << ", " << f.z);
-            cam.move((h.keyDown(Keyboard::D) ? 1.f : -1.f) * dt * speed * cam.getRight());
+            cam.move((h.keyDown(Keyboard::D) ? 1.f : -1.f) * dt * speed * cam.getGlobalRight());
         }
         if (h.keyDown(Keyboard::W) || h.keyDown(Keyboard::S))
         {
-
-            cam.move((h.keyDown(Keyboard::W) ? 1.f : -1.f) * dt * speed * cam.getFront());
+            cam.move((h.keyDown(Keyboard::W) ? 1.f : -1.f) * dt * speed * cam.getGlobalFront());
+        }
+        if (h.keyDown(Keyboard::Space) || h.keyDown(Keyboard::LControl))
+        {
+            cam.move((h.keyDown(Keyboard::Space) ? 1.f : -1.f) * dt * speed * cam.getGlobalUp());
         }
     }
 };
@@ -151,9 +150,9 @@ int main(int c, char* v[])
         void mouseMoved(const float x, const float y) override
         {
             auto& cam = *jop::Camera::getDefault().getObject();
-
+            
             cam.rotate(glm::radians(y), jop::Transform::Right);
-            cam.rotate(glm::radians(x), jop::Transform::Up);
+            cam.rotate(glm::angleAxis(glm::radians(x), cam.getRotation() * jop::Transform::Up));
         }
     };
 
@@ -162,8 +161,15 @@ int main(int c, char* v[])
 
     e.createScene<SomeScene>();
 
-    //for (int i = 1; i <= jop::Material::DefaultAttributes; ++i)
-    //    JOP_ASSERT(&jop::ShaderManager::getShader(i) != &jop::Shader::getDefault(), "aaa");
+    /*for (int i = 1; i <= jop::Material::DefaultAttributes; ++i)
+    {
+        JOP_DEBUG_INFO("Compiling shader: " << i);
+        if (&jop::ShaderManager::getShader(i) == &jop::Shader::getDefault())
+            return EXIT_FAILURE;
+
+        jop::ResourceManager::unloadResource("jop_shader_" + std::to_string(i));
+    }*/
+
     if (&jop::ShaderManager::getShader(jop::Material::DefaultAttributes) == &jop::Shader::getDefault())
         return EXIT_FAILURE;
 
