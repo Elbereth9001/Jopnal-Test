@@ -48,24 +48,25 @@ public:
         obj->createComponent<jop::GenericDrawable>(*getDefaultLayer(), "BoxDrawable")
            ->setShader(jop::ShaderManager::getShader(attribs))
            .setModel(jop::Model(/*jop::ResourceManager::getNamedResource<jop::SphereMesh>("Ball", 1.f, 30, 30)*/jop::Mesh::getDefault(), def));
-        obj->setPosition(0.5, -0.2f, 4);
+        obj->setPosition(0.5, -0.2f, -4);
 
-        cloneObject("Def", "Def2")->setPosition(-5.f, 0, 10).rotate(-45, 45, 0);
-        cloneObject("Def2", "Def3")->setPosition(- 5, -2, 10).rotate(54, 70, 1);
+        cloneObject("Def", "Def2")->setPosition(-5.f, 0, -10).rotate(-45, 45, 0);
+        cloneObject("Def2", "Def3")->setPosition(- 5, -2, -10).rotate(54, 70, 1);
         
         createObject("LightCaster");
         getObject("LightCaster")->createComponent<jop::LightSource>(*getDefaultLayer(), "LC");
         getObject("LightCaster")->getComponent<jop::LightSource>()->setAttenuation(0.1f, 0.3f, 0.3f, 10);
         getObject("LightCaster")->createComponent<jop::GenericDrawable>(*getDefaultLayer(), "ASDF");
-        getObject("LightCaster")->setPosition(1.5f, 0.f, 3.f).setScale(0.3f);
+        getObject("LightCaster")->setPosition(1.5f, 0.f, -3.f).setScale(0.3f);
 
         createObject("DirLight")->createComponent<jop::LightSource>(*getDefaultLayer(), "LS")->setType(jop::LightSource::Type::Directional);
         getObject("DirLight")->setActive(false);
 
         createObject("SpotLight")->createComponent<jop::LightSource>(*getDefaultLayer(), "SP")->setType(jop::LightSource::Type::Spot).setAttenuation(jop::LightSource::AttenuationPreset::_320).setCutoff(glm::radians(10.f), glm::radians(12.f));
-        //getObject("SpotLight")->rotate(0, glm::radians(-200.f), 0);
+        getObject("SpotLight")->rotate(0, glm::radians(-20.f), 0);
 
-
+        jop::Camera::getDefault().getObject()->createComponent<jop::LightSource>(*getDefaultLayer(), "LC2")->setAttenuation(jop::LightSource::AttenuationPreset::_50);
+        //jop::Camera::getDefault().getObject()->rotate(0, glm::pi<float>(), 0);
 
         if (!jop::StateLoader::saveState("Scene/test", true, true, true))
             jop::Engine::exit();
@@ -96,17 +97,14 @@ public:
 
         if (h.keyDown(Keyboard::A) || h.keyDown(Keyboard::D))
         {
-            cam.move((h.keyDown(Keyboard::D) ? -1.f : 1.f) * dt * speed * cam.getRight());
+            auto f = cam.getRight();
+            JOP_DEBUG_INFO("Right: " << f.x << ", " << f.y << ", " << f.z);
+            cam.move((h.keyDown(Keyboard::D) ? 1.f : -1.f) * dt * speed * cam.getRight());
         }
         if (h.keyDown(Keyboard::W) || h.keyDown(Keyboard::S))
         {
-            //auto f = cam.getFront();
-            //f.z = -f.z;
 
-            auto f = cam.getFront();
-            JOP_DEBUG_INFO("Front: " << f.x << ", " << f.y << ", " << f.z);
-
-            cam.move((h.keyDown(Keyboard::W) ? -1.f : 1.f) * dt * speed * cam.getFront());
+            cam.move((h.keyDown(Keyboard::W) ? 1.f : -1.f) * dt * speed * cam.getFront());
         }
     }
 };
@@ -152,15 +150,10 @@ int main(int c, char* v[])
 
         void mouseMoved(const float x, const float y) override
         {
-            static int count = 0;
-            if (count++ < 5) return;
-
             auto& cam = *jop::Camera::getDefault().getObject();
 
-            JOP_DEBUG_INFO("Mouse: " << x << ", " << y);
-
-
-            cam.rotate(-glm::radians(y), -glm::radians(x), 0.f);
+            cam.rotate(glm::radians(y), jop::Transform::Right);
+            cam.rotate(glm::radians(x), jop::Transform::Up);
         }
     };
 
