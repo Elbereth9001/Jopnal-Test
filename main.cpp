@@ -1,36 +1,15 @@
 #include <Jopnal/Jopnal.hpp>
 
 
-class SomeComponent : public jop::Component
-{
-public:
-
-    SomeComponent(jop::Object& obj)
-        : jop::Component(obj, "")
-    {}
-
-    JOP_GENERIC_CLONE(SomeComponent)
-};
-
-JOP_REGISTER_LOADABLE(a, SomeComponent)[](jop::Object& o, const jop::Scene&, const jop::json::Value&)
-{
-    o.createComponent<SomeComponent>();
-    return true;
-}
-JOP_END_LOADABLE_REGISTRATION(SomeComponent)
-
-JOP_REGISTER_SAVEABLE(a, SomeComponent)[](const jop::Component&, jop::json::Value&, jop::json::Value::AllocatorType&) -> bool
-{
-    return true;
-}
-JOP_END_SAVEABLE_REGISTRATION(SomeComponent)
-
 class SomeScene : public jop::Scene
 {
 public:
 
+    float m_sine;
+
     SomeScene()
-        : jop::Scene("SomeScene")
+        : jop::Scene("SomeScene"),
+          m_sine(0.f)
     {}
 
     void initialize() override
@@ -63,7 +42,7 @@ public:
         getObject("DirLight")->setActive(false);
 
         createObject("SpotLight")->createComponent<jop::LightSource>(*getDefaultLayer(), "SP")->setType(jop::LightSource::Type::Spot).setAttenuation(jop::LightSource::AttenuationPreset::_320).setCutoff(glm::radians(10.f), glm::radians(12.f));
-        getObject("SpotLight")->rotate(0, glm::radians(20.f), 0);
+        getObject("SpotLight")->rotate(0, glm::radians(5.f), 0);
 
         jop::Camera::getDefault().getObject()->createComponent<jop::LightSource>(*getDefaultLayer(), "LC2")->setAttenuation(jop::LightSource::AttenuationPreset::_50);
 
@@ -73,16 +52,21 @@ public:
 
     void preUpdate(const float dt) override
     {
+        if (getObject("Def").expired())
+            return;
+
+        m_sine += dt;
+
         getObject("Def")->rotate(0.f, dt / 4, dt / 2);
 
         getObject("DirLight")->rotate(0.f, dt, 0.f);
-        getObject("SpotLight")->rotate(0.f, std::sin(jop::Engine::getTotalTime() * 5) * dt / 2, 0.f);
+        getObject("SpotLight")->rotate(0.f, std::sin(m_sine * 5) * dt / 2, 0.f);
 
-        const jop::uint8 col = static_cast<jop::uint8>(200 * std::max(0.0, std::sin(jop::Engine::getTotalTime())));
+        const jop::uint8 col = static_cast<jop::uint8>(200 * std::max(0.f, std::sin(m_sine)));
 
         jop::ResourceManager::getExistingResource<jop::Material>("defmat").setReflection(jop::Material::Reflection::Emission, jop::Color(col, col, col));
 
-        getObject("LightCaster")->move(0.f, 2 * dt * std::sin(8.f * static_cast<float>(jop::Engine::getTotalTime())), 2* dt * std::sin(4.f * static_cast<float>(jop::Engine::getTotalTime())));
+        getObject("LightCaster")->move(0.f, 2.f * dt * std::sin(8.f * m_sine), 2.f * dt * std::sin(4.f * m_sine));
     }
 
     void postUpdate(const float dt) override
@@ -109,9 +93,12 @@ public:
     }
 };
 
-JOP_REGISTER_LOADABLE(a, SomeScene)[](std::unique_ptr<jop::Scene>& s, const jop::json::Value&)
+JOP_REGISTER_LOADABLE(a, SomeScene)[](std::unique_ptr<jop::Scene>& s, const jop::json::Value& val)
 {
-    s = std::make_unique<SomeScene>();
+    auto sc = std::make_unique<SomeScene>();
+    sc->m_sine = static_cast<float>(val["sine"].GetDouble());
+
+    s = std::move(sc);
     return true;
 }
 JOP_END_LOADABLE_REGISTRATION(SomeScene)
@@ -119,7 +106,8 @@ JOP_END_LOADABLE_REGISTRATION(SomeScene)
 JOP_REGISTER_SAVEABLE(a, SomeScene)[](const jop::Scene& s, jop::json::Value& v, jop::json::Value::AllocatorType& a) -> bool
 {
     v.AddMember(jop::json::StringRef("id"), jop::json::StringRef(s.getID().c_str()), a)
-     .AddMember(jop::json::StringRef("active"), s.isActive(), a);
+     .AddMember(jop::json::StringRef("active"), s.isActive(), a)
+     .AddMember(jop::json::StringRef("sine"), static_cast<const SomeScene&>(s).m_sine, a);
 
     return true;
 }
@@ -127,8 +115,7 @@ JOP_END_SAVEABLE_REGISTRATION(SomeScene)
 
 int main(int c, char* v[])
 {
-    jop::Engine e("JopTestProject", c , v);
-    e.loadDefaultConfiguration();
+    JOP_ENGINE_INIT("JopTestProject", c , v);
 
     struct EventHandler : jop::WindowEventHandler
     {
@@ -143,7 +130,10 @@ int main(int c, char* v[])
         void keyPressed(const int key, const int, const int) override
         {
             if (key == jop::Keyboard::L)
-                jop::StateLoader::getInstance().loadState("Scene/test");
+                jop::StateLoader::getInstance().loadState("Scene/test", true, true, true);
+            else if (key == jop::Keyboard::K)
+                jop::StateLoader::getInstance().saveState("Scene/test", true, true, true);
+
             if (key == jop::Keyboard::Escape)
                 closed();
         }
@@ -167,10 +157,10 @@ int main(int c, char* v[])
         }
     };
 
-    e.getSubsystem<jop::Window>()->setMouseMode(jop::Mouse::Mode::Frozen);
-    e.getSubsystem<jop::Window>()->setEventHandler<EventHandler>();
+    jop::Engine::getSubsystem<jop::Window>()->setMouseMode(jop::Mouse::Mode::Frozen);
+    jop::Engine::getSubsystem<jop::Window>()->setEventHandler<EventHandler>();
 
-    e.createScene<SomeScene>();
+    //jop::Engine::createScene<SomeScene>();
 
     /*for (int i = 1; i <= jop::Material::DefaultAttributes; ++i)
     {
@@ -184,5 +174,5 @@ int main(int c, char* v[])
     if (&jop::ShaderManager::getShader(jop::Material::DefaultAttributes) == &jop::Shader::getDefault())
         return EXIT_FAILURE;
 
-    return e.runMainLoop();
+    return JOP_MAIN_LOOP;
 }
