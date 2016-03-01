@@ -63,7 +63,7 @@ public:
         getObject("DirLight")->setActive(false);
 
         createObject("SpotLight")->createComponent<jop::LightSource>(*getDefaultLayer(), "SP")->setType(jop::LightSource::Type::Spot).setAttenuation(jop::LightSource::AttenuationPreset::_320).setCutoff(glm::radians(10.f), glm::radians(12.f));
-        getObject("SpotLight")->rotate(0, glm::radians(-20.f), 0);
+        getObject("SpotLight")->rotate(0, glm::radians(20.f), 0);
 
         jop::Camera::getDefault().getObject()->createComponent<jop::LightSource>(*getDefaultLayer(), "LC2")->setAttenuation(jop::LightSource::AttenuationPreset::_50);
 
@@ -73,7 +73,7 @@ public:
 
     void preUpdate(const float dt) override
     {
-        getObject("Def")->rotate(0.f, dt / 8, dt / 4);
+        getObject("Def")->rotate(0.f, dt / 4, dt / 2);
 
         getObject("DirLight")->rotate(0.f, dt, 0.f);
         getObject("SpotLight")->rotate(0.f, std::sin(jop::Engine::getTotalTime() * 5) * dt / 2, 0.f);
@@ -99,6 +99,7 @@ public:
         }
         if (h.keyDown(Keyboard::W) || h.keyDown(Keyboard::S))
         {
+
             cam.move((h.keyDown(Keyboard::W) ? 1.f : -1.f) * dt * speed * cam.getGlobalFront());
         }
         if (h.keyDown(Keyboard::Space) || h.keyDown(Keyboard::LControl))
@@ -150,9 +151,19 @@ int main(int c, char* v[])
         void mouseMoved(const float x, const float y) override
         {
             auto& cam = *jop::Camera::getDefault().getObject();
-            
-            cam.rotate(glm::radians(y), jop::Transform::Right);
-            cam.rotate(glm::angleAxis(glm::radians(x), cam.getRotation() * jop::Transform::Up));
+
+            static float mx = 0.f;
+            static float my = 0.f;
+            mx += x;
+            my = glm::clamp(my + y, -85.f, 85.f);
+
+
+            //auto f = cam.getRotation();
+            //JOP_DEBUG_INFO("Front: " << f.x << ", " << f.y << ", " << f.z << ", " << f.w);
+
+            //cam.rotate(glm::radians(-y), glm::radians(-x), -glm::eulerAngles(cam.getRotation()).z);
+
+            cam.setRotation(glm::radians(-my), glm::radians(-mx), 0.f);
         }
     };
 
