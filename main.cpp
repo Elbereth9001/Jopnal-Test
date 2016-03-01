@@ -147,12 +147,6 @@ int main(int c, char* v[])
             mx += x;
             my = glm::clamp(my + y, -85.f, 85.f);
 
-
-            //auto f = cam.getRotation();
-            //JOP_DEBUG_INFO("Front: " << f.x << ", " << f.y << ", " << f.z << ", " << f.w);
-
-            //cam.rotate(glm::radians(-y), glm::radians(-x), -glm::eulerAngles(cam.getRotation()).z);
-
             cam.setRotation(glm::radians(-my), glm::radians(-mx), 0.f);
         }
     };
