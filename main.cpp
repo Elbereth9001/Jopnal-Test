@@ -154,7 +154,7 @@ int main(int c, char* v[])
     jop::Engine::getSubsystem<jop::Window>()->setMouseMode(jop::Mouse::Mode::Frozen);
     jop::Engine::getSubsystem<jop::Window>()->setEventHandler<EventHandler>();
 
-    //jop::Engine::createScene<SomeScene>();
+    jop::Engine::createScene<SomeScene>();
 
     /*for (int i = 1; i <= jop::Material::DefaultAttributes; ++i)
     {
