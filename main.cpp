@@ -44,7 +44,10 @@ public:
         createObject("SpotLight")->createComponent<jop::LightSource>(*getDefaultLayer(), "SP")->setType(jop::LightSource::Type::Spot).setAttenuation(jop::LightSource::AttenuationPreset::_320).setCutoff(glm::radians(10.f), glm::radians(12.f));
         getObject("SpotLight")->rotate(0, glm::radians(5.f), 0);
 
-        jop::Camera::getDefault().getObject()->createComponent<jop::LightSource>(*getDefaultLayer(), "LC2")->setAttenuation(jop::LightSource::AttenuationPreset::_50);
+       createObject("Cam")->createComponent<jop::LightSource>(*getDefaultLayer(), "LC2")->setAttenuation(jop::LightSource::AttenuationPreset::_50);
+
+       auto p = jop::Camera::Projection::Perspective;
+       getObject("Cam")->createComponent<jop::Camera>(*getDefaultLayer(), p);
 
         if (!jop::StateLoader::saveState("Scene/test", true, true, true))
             jop::Engine::exit();
@@ -73,7 +76,7 @@ public:
     {
         using jop::Keyboard;
         auto& h = *jop::Engine::getSubsystem<jop::Window>()->getEventHandler();
-        auto& cam = *jop::Camera::getDefault().getObject();
+        auto& cam = *getObject("Cam");
 
         const float speed = 4.f;
 
@@ -140,7 +143,7 @@ int main(int c, char* v[])
 
         void mouseMoved(const float x, const float y) override
         {
-            auto& cam = *jop::Camera::getDefault().getObject();
+            auto& cam = *jop::Engine::getCurrentScene().getObject("Cam");
 
             static float mx = 0.f;
             static float my = 0.f;
