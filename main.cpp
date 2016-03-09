@@ -16,41 +16,59 @@ public:
     {
         auto attribs = jop::Material::DefaultAttributes;
 
+        // Ground
+        {
+            auto attr = jop::Material::Attribute::AmbientConstant
+                      | jop::Material::Attribute::Diffusemap
+                      | jop::Material::Attribute::Material
+                      | jop::Material::Attribute::Phong;
+
+            auto ground = createObject("grnd");
+            auto comp = ground->createComponent<jop::GenericDrawable>("grndcmp", getRenderer());
+            comp->setModel(jop::Model(jop::ResourceManager::getNamedResource<jop::BoxMesh>("rectasdf", 10.f, true), jop::ResourceManager::getEmptyResource<jop::Material>("grndmat", attr)));
+            comp->getModel().getMaterial()->setReflection(jop::Color::Black, jop::Color::Gray, jop::Color::Gray, jop::Color::Black);
+            comp->setShader(jop::ShaderManager::getShader(attr));
+            comp->setReceiveShadows(true);
+
+            ground->setRotation(-glm::half_pi<float>(), 0.f, 0.f);
+            ground->setPosition(-2.5f, 0.f, -5.f);
+        }
+
         jop::Material& def = jop::ResourceManager::getEmptyResource<jop::Material>("defmat", attribs);
-        def.setMap(jop::Material::Map::Diffuse, jop::ResourceManager::getResource<jop::Texture>("container2.png"));
-        def.setMap(jop::Material::Map::Specular, jop::ResourceManager::getResource<jop::Texture>("container2_specular.png"));
-        def.setMap(jop::Material::Map::Emission, jop::ResourceManager::getResource<jop::Texture>("matrix.jpg"));
-        def.setShininess(128.f);
+        def.setMap(jop::Material::Map::Diffuse, jop::ResourceManager::getResource<jop::Texture2D>("container2.png"));
+        def.setMap(jop::Material::Map::Specular, jop::ResourceManager::getResource<jop::Texture2D>("container2_specular.png"));
+        def.setMap(jop::Material::Map::Emission, jop::ResourceManager::getResource<jop::Texture2D>("matrix.jpg"));
+        def.setShininess(64.f);
         def.setReflection(jop::Material::Reflection::Emission, jop::Color::Black);
         
         auto obj = createObject("Def");
-        obj->createComponent<jop::GenericDrawable>(*getDefaultLayer(), "BoxDrawable")
+        obj->createComponent<jop::GenericDrawable>("BoxDrawable", getRenderer())
            ->setShader(jop::ShaderManager::getShader(attribs))
            .setModel(jop::Model(jop::Mesh::getDefault(), def));
         obj->setPosition(0.5, -0.2f, -4);
 
-        cloneObject("Def", "Def2")->setPosition(-5.f, 0, -10).rotate(-45, 45, 0);
-        cloneObject("Def2", "Def3")->setPosition(- 5, -2, -10).rotate(54, 70, 1);
+        cloneObject("Def", "Def2")->setPosition(-5.f, 0, -8).rotate(-45, 45, 0);
+        cloneObject("Def2", "Def3")->setPosition(- 5, -2, -8).rotate(54, 70, 1);
         
         createObject("LightCaster");
-        getObject("LightCaster")->createComponent<jop::LightSource>(*getDefaultLayer(), "LC");
-        getObject("LightCaster")->getComponent<jop::LightSource>()->setAttenuation(0.1f, 0.3f, 0.3f, 10);
-        getObject("LightCaster")->createComponent<jop::GenericDrawable>(*getDefaultLayer(), "ASDF");
-        getObject("LightCaster")->setPosition(1.5f, 0.f, -3.f).setScale(0.3f);
+        getObject("LightCaster")->createComponent<jop::LightSource>("LC", getRenderer(), jop::LightSource::Type::Point);
+        getObject("LightCaster")->getComponent<jop::LightSource>()->setAttenuation(0.1f, 0.3f, 0.3f, 10).setCastShadows(false);
+        getObject("LightCaster")->createComponent<jop::GenericDrawable>("ASDF", getRenderer());
+        getObject("LightCaster")->setPosition(-0.5f, 0.f, -3.f).setScale(0.3f);
 
-        createObject("DirLight")->createComponent<jop::LightSource>(*getDefaultLayer(), "LS")->setType(jop::LightSource::Type::Directional);
+        createObject("DirLight")->createComponent<jop::LightSource>("LS", getRenderer(), jop::LightSource::Type::Directional)->setCastShadows(true);
         getObject("DirLight")->setActive(false);
+        getObject("DirLight")->setPosition(-2.5f, 10.f, -5.f).setScale(30).setRotation(-glm::half_pi<float>(), 0.f, 0.f);
 
-        createObject("SpotLight")->createComponent<jop::LightSource>(*getDefaultLayer(), "SP")->setType(jop::LightSource::Type::Spot).setAttenuation(jop::LightSource::AttenuationPreset::_320).setCutoff(glm::radians(10.f), glm::radians(12.f));
+        createObject("SpotLight")->createComponent<jop::LightSource>("SP", getRenderer(), jop::LightSource::Type::Spot)->setAttenuation(jop::LightSource::AttenuationPreset::_320).setCutoff(glm::radians(10.f), glm::radians(12.f)).setCastShadows(true);
         getObject("SpotLight")->rotate(0, glm::radians(5.f), 0);
 
-       createObject("Cam")->createComponent<jop::LightSource>(*getDefaultLayer(), "LC2")->setAttenuation(jop::LightSource::AttenuationPreset::_50);
+        createObject("Cam")/*->createComponent<jop::LightSource>("LC2", getRenderer(), jop::LightSource::Type::Spot)->setAttenuation(jop::LightSource::AttenuationPreset::_50)*/;
 
-       auto p = jop::Camera::Projection::Perspective;
-       getObject("Cam")->createComponent<jop::Camera>(*getDefaultLayer(), p);
+        getObject("Cam")->createComponent<jop::Camera>("cam", getRenderer(), jop::Camera::Projection::Perspective);
 
-        if (!jop::StateLoader::saveState("Scene/test", true, true, true))
-            jop::Engine::exit();
+        //if (!jop::StateLoader::saveState("Scene/test", true, true))
+        //    jop::Engine::exit();
     }
 
     void preUpdate(const float dt) override
@@ -62,7 +80,7 @@ public:
 
         getObject("Def")->rotate(0.f, dt / 4, dt / 2);
 
-        getObject("DirLight")->rotate(0.f, dt, 0.f);
+        getObject("DirLight")->rotate(dt, 0, 0.f);
         getObject("SpotLight")->rotate(0.f, std::sin(m_sine * 5) * dt / 2, 0.f);
 
         const jop::uint8 col = static_cast<jop::uint8>(200 * std::max(0.f, std::sin(m_sine)));
@@ -89,7 +107,7 @@ public:
 
             cam.move((h.keyDown(Keyboard::W) ? 1.f : -1.f) * dt * speed * cam.getGlobalFront());
         }
-        if (h.keyDown(Keyboard::Space) || h.keyDown(Keyboard::LControl))
+        if (h.keyDown(Keyboard::Space) || h.keyDown(Keyboard::LShift))
         {
             cam.move((h.keyDown(Keyboard::Space) ? 1.f : -1.f) * dt * speed * cam.getGlobalUp());
         }
@@ -133,9 +151,9 @@ int main(int c, char* v[])
         void keyPressed(const int key, const int, const int) override
         {
             if (key == jop::Keyboard::L)
-                jop::StateLoader::getInstance().loadState("Scene/test", true, true, true);
+                jop::StateLoader::getInstance().loadState("Scene/test", true, true);
             else if (key == jop::Keyboard::K)
-                jop::StateLoader::getInstance().saveState("Scene/test", true, true, true);
+                jop::StateLoader::getInstance().saveState("Scene/test", true, true);
 
             if (key == jop::Keyboard::Escape)
                 closed();
