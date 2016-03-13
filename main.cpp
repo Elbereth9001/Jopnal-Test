@@ -166,6 +166,8 @@ int main(int c, char* v[])
 
                 jop::Engine::getCurrentScene().cloneChild("Def2", "def", jop::Transform().setPosition(-2.5f, 1.f, -5.f));
             }
+            else if (key == jop::Keyboard::Comma)
+                jop::Engine::getCurrentScene().getWorld().setDebugMode(!jop::Engine::getCurrentScene().getWorld().debugMode());
 
             if (key == jop::Keyboard::Escape)
                 closed();
