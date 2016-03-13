@@ -10,11 +10,13 @@ public:
     SomeScene()
         : jop::Scene("SomeScene"),
           m_sine(0.f)
-    {}
-
-    void initialize() override
     {
+        getWorld().setDebugMode(true);
+
         auto attribs = jop::Material::DefaultAttributes;
+
+        createChild("pln")->setPosition(-2.5, -5, -5);
+        getChild("pln")->createComponent<jop::RigidBody>(getWorld(), jop::ResourceManager::getNamedResource<jop::InfinitePlaneShape>("bigbcoll"), jop::RigidBody::Type::Static);
 
         // Ground
         {
@@ -23,15 +25,14 @@ public:
                       | jop::Material::Attribute::Material
                       | jop::Material::Attribute::Phong;
 
-            auto ground = createObject("grnd");
-            auto comp = ground->createComponent<jop::GenericDrawable>("grndcmp", getRenderer());
-            comp->setModel(jop::Model(jop::ResourceManager::getNamedResource<jop::BoxMesh>("rectasdf", 10.f, true), jop::ResourceManager::getEmptyResource<jop::Material>("grndmat", attr)));
-            comp->getModel().getMaterial()->setReflection(jop::Color::Black, jop::Color::Gray, jop::Color::Gray, jop::Color::Black);
-            comp->setShader(jop::ShaderManager::getShader(attr));
-            comp->setReceiveShadows(true);
+            auto ground = createChild("grnd");
+            auto& comp = ground->createComponent<jop::GenericDrawable>(getRenderer());
+            comp.setModel(jop::Model(jop::ResourceManager::getNamedResource<jop::BoxMesh>("rectasdf", 10.f, true), jop::ResourceManager::getEmptyResource<jop::Material>("grndmat", attr)));
+            
+            comp.getModel().getMaterial()->setReflection(jop::Color::Black, jop::Color::Gray, jop::Color::Gray, jop::Color::Black);
+            comp.setReceiveShadows(true);
 
-            ground->setRotation(-glm::half_pi<float>(), 0.f, 0.f);
-            ground->setPosition(-2.5f, 0.f, -5.f);
+            ground->setPosition(-2.5f, -0.f, -5.f);
         }
 
         jop::Material& def = jop::ResourceManager::getEmptyResource<jop::Material>("defmat", attribs);
@@ -41,31 +42,33 @@ public:
         def.setShininess(64.f);
         def.setReflection(jop::Material::Reflection::Emission, jop::Color::Black);
         
-        auto obj = createObject("Def");
-        obj->createComponent<jop::GenericDrawable>("BoxDrawable", getRenderer())
-           ->setShader(jop::ShaderManager::getShader(attribs))
+        auto obj = createChild("Def");
+        obj->createComponent<jop::GenericDrawable>(getRenderer())
+           .setShader(jop::ShaderManager::getShader(attribs))
            .setModel(jop::Model(jop::Mesh::getDefault(), def));
         obj->setPosition(0.5, -0.2f, -4);
 
-        cloneObject("Def", "Def2")->setPosition(-5.f, 0, -8).rotate(-45, 45, 0);
-        cloneObject("Def2", "Def3")->setPosition(- 5, -2, -8).rotate(54, 70, 1);
+        cloneChild("Def", "Def2")->setPosition(-5.f, 0, -8).rotate(-45, 45, 0);
+        getChild("Def2")->createComponent<jop::RigidBody>(getWorld(), jop::ResourceManager::getNamedResource<jop::BoxShape>("boxcoll", 1.f), jop::RigidBody::Type::Dynamic, 1.f);
+
+        cloneChild("Def2", "Def3", jop::Transform(*getChild("Def2").get()).setPosition(-5, -2, -8).rotate(54, 70, 1));
         
-        createObject("LightCaster");
-        getObject("LightCaster")->createComponent<jop::LightSource>("LC", getRenderer(), jop::LightSource::Type::Point);
-        getObject("LightCaster")->getComponent<jop::LightSource>()->setAttenuation(0.1f, 0.3f, 0.3f, 10).setCastShadows(false);
-        getObject("LightCaster")->createComponent<jop::GenericDrawable>("ASDF", getRenderer());
-        getObject("LightCaster")->setPosition(-0.5f, 0.f, -3.f).setScale(0.3f);
+        createChild("LightCaster");
+        getChild("LightCaster")->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Point);
+        getChild("LightCaster")->getComponent<jop::LightSource>()->setAttenuation(jop::LightSource::AttenuationPreset::_50).setCastShadows(true);
+        getChild("LightCaster")->createComponent<jop::GenericDrawable>(getRenderer()).setCastShadows(true);
+        getChild("LightCaster")->setPosition(-0.5f, 0.f, -3.f).setScale(0.3f);
 
-        createObject("DirLight")->createComponent<jop::LightSource>("LS", getRenderer(), jop::LightSource::Type::Directional)->setCastShadows(true);
-        getObject("DirLight")->setActive(false);
-        getObject("DirLight")->setPosition(-2.5f, 10.f, -5.f).setScale(30).setRotation(-glm::half_pi<float>(), 0.f, 0.f);
+        createChild("DirLight")->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Directional).setCastShadows(false);
+        getChild("DirLight")->setActive(false);
+        getChild("DirLight")->setPosition(-2.5f, 10.f, -5.f).setScale(30).setRotation(-glm::half_pi<float>(), 0.f, 0.f);
 
-        createObject("SpotLight")->createComponent<jop::LightSource>("SP", getRenderer(), jop::LightSource::Type::Spot)->setAttenuation(jop::LightSource::AttenuationPreset::_320).setCutoff(glm::radians(10.f), glm::radians(12.f)).setCastShadows(true);
-        getObject("SpotLight")->rotate(0, glm::radians(5.f), 0);
+        createChild("SpotLight")->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Spot).setAttenuation(jop::LightSource::AttenuationPreset::_320).setCutoff(glm::radians(10.f), glm::radians(12.f)).setCastShadows(true);
+        getChild("SpotLight")->rotate(0, glm::radians(5.f), 0);
 
-        createObject("Cam")/*->createComponent<jop::LightSource>("LC2", getRenderer(), jop::LightSource::Type::Spot)->setAttenuation(jop::LightSource::AttenuationPreset::_50)*/;
+        createChild("Cam")/*->createComponent<jop::LightSource>("LC2", getRenderer(), jop::LightSource::Type::Spot)->setAttenuation(jop::LightSource::AttenuationPreset::_50)*/;
 
-        getObject("Cam")->createComponent<jop::Camera>("cam", getRenderer(), jop::Camera::Projection::Perspective);
+        getChild("Cam")->createComponent<jop::Camera>(getRenderer(), jop::Camera::Projection::Perspective);
 
         //if (!jop::StateLoader::saveState("Scene/test", true, true))
         //    jop::Engine::exit();
@@ -73,28 +76,28 @@ public:
 
     void preUpdate(const float dt) override
     {
-        if (getObject("Def").expired())
+        if (getChild("Def").expired())
             return;
 
         m_sine += dt;
 
-        getObject("Def")->rotate(0.f, dt / 4, dt / 2);
+        getChild("Def")->rotate(0.f, dt / 4, dt / 2);
 
-        getObject("DirLight")->rotate(dt, 0, 0.f);
-        getObject("SpotLight")->rotate(0.f, std::sin(m_sine * 5) * dt / 2, 0.f);
+        getChild("DirLight")->rotate(dt, 0, 0.f);
+        getChild("SpotLight")->rotate(0.f, std::sin(m_sine * 5) * dt / 1.5f, 0.f);
 
         const jop::uint8 col = static_cast<jop::uint8>(200 * std::max(0.f, std::sin(m_sine)));
 
         jop::ResourceManager::getExistingResource<jop::Material>("defmat").setReflection(jop::Material::Reflection::Emission, jop::Color(col, col, col));
 
-        getObject("LightCaster")->move(0.f, 2.f * dt * std::sin(8.f * m_sine), 2.f * dt * std::sin(4.f * m_sine));
+        getChild("LightCaster")->move(0.f, 2.f * dt * std::sin(8.f * m_sine), 2.f * dt * std::sin(4.f * m_sine));
     }
 
     void postUpdate(const float dt) override
     {
         using jop::Keyboard;
         auto& h = *jop::Engine::getSubsystem<jop::Window>()->getEventHandler();
-        auto& cam = *getObject("Cam");
+        auto& cam = *getChild("Cam");
 
         const float speed = 4.f;
 
@@ -154,6 +157,15 @@ int main(int c, char* v[])
                 jop::StateLoader::getInstance().loadState("Scene/test", true, true);
             else if (key == jop::Keyboard::K)
                 jop::StateLoader::getInstance().saveState("Scene/test", true, true);
+            else if (key == jop::Keyboard::P)
+                jop::Engine::setPaused(!jop::Engine::isPaused());
+            else if (key == jop::Keyboard::C)
+            {
+                static unsigned int created = 0;
+                JOP_DEBUG_INFO("Objects created: " << created++);
+
+                jop::Engine::getCurrentScene().cloneChild("Def2", "def", jop::Transform().setPosition(-2.5f, 1.f, -5.f));
+            }
 
             if (key == jop::Keyboard::Escape)
                 closed();
@@ -161,7 +173,7 @@ int main(int c, char* v[])
 
         void mouseMoved(const float x, const float y) override
         {
-            auto& cam = *jop::Engine::getCurrentScene().getObject("Cam");
+            auto& cam = *jop::Engine::getCurrentScene().getChild("Cam");
 
             static float mx = 0.f;
             static float my = 0.f;
