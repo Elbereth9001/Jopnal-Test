@@ -18,23 +18,6 @@ public:
         createChild("pln")->setPosition(-2.5, -5, -5);
         getChild("pln")->createComponent<jop::RigidBody>(getWorld(), jop::ResourceManager::getNamedResource<jop::InfinitePlaneShape>("bigbcoll"), jop::RigidBody::Type::Static);
 
-        // Ground
-        {
-            auto attr = jop::Material::Attribute::AmbientConstant
-                      | jop::Material::Attribute::Diffusemap
-                      | jop::Material::Attribute::Material
-                      | jop::Material::Attribute::Phong;
-
-            auto ground = createChild("grnd");
-            auto& comp = ground->createComponent<jop::GenericDrawable>(getRenderer());
-            comp.setModel(jop::Model(jop::ResourceManager::getNamedResource<jop::BoxMesh>("rectasdf", 10.f, true), jop::ResourceManager::getEmptyResource<jop::Material>("grndmat", attr)));
-            
-            comp.getModel().getMaterial()->setReflection(jop::Color::Black, jop::Color::Gray, jop::Color::Gray, jop::Color::Black);
-            comp.setReceiveShadows(true);
-
-            ground->setPosition(-2.5f, -0.f, -5.f);
-        }
-
         jop::Material& def = jop::ResourceManager::getEmptyResource<jop::Material>("defmat", attribs);
         def.setMap(jop::Material::Map::Diffuse, jop::ResourceManager::getResource<jop::Texture2D>("container2.png"));
         def.setMap(jop::Material::Map::Specular, jop::ResourceManager::getResource<jop::Texture2D>("container2_specular.png"));
@@ -44,7 +27,6 @@ public:
         
         auto obj = createChild("Def");
         obj->createComponent<jop::GenericDrawable>(getRenderer())
-           .setShader(jop::ShaderManager::getShader(attribs))
            .setModel(jop::Model(jop::Mesh::getDefault(), def));
         obj->setPosition(0.5, -0.2f, -4);
 
@@ -69,6 +51,23 @@ public:
         createChild("Cam")/*->createComponent<jop::LightSource>("LC2", getRenderer(), jop::LightSource::Type::Spot)->setAttenuation(jop::LightSource::AttenuationPreset::_50)*/;
 
         getChild("Cam")->createComponent<jop::Camera>(getRenderer(), jop::Camera::Projection::Perspective);
+
+        // Ground
+        {
+            auto attr = jop::Material::Attribute::AmbientConstant
+                | jop::Material::Attribute::Diffusemap
+                | jop::Material::Attribute::Material
+                | jop::Material::Attribute::Phong;
+
+            auto ground = createChild("grnd");
+            auto& comp = ground->createComponent<jop::GenericDrawable>(getRenderer());
+            comp.setModel(jop::Model(jop::ResourceManager::getNamedResource<jop::BoxMesh>("rectasdf", 10.f, true), jop::ResourceManager::getEmptyResource<jop::Material>("grndmat", attr)));
+
+            comp.getModel().getMaterial()->setReflection(jop::Color::Black, jop::Color::Gray, jop::Color::Gray, jop::Color::Black);
+            comp.setReceiveShadows(true);
+
+            ground->setPosition(-2.5f, -0.f, -5.f);
+        }
 
         //if (!jop::StateLoader::saveState("Scene/test", true, true))
         //    jop::Engine::exit();
@@ -187,6 +186,9 @@ int main(int c, char* v[])
     jop::Engine::getSubsystem<jop::Window>()->setMouseMode(jop::Mouse::Mode::Frozen);
     jop::Engine::getSubsystem<jop::Window>()->setEventHandler<EventHandler>();
 
+    if (&jop::ShaderManager::getShader(jop::Material::DefaultAttributes) == &jop::Shader::getDefault())
+        return EXIT_FAILURE;
+
     jop::Engine::createScene<SomeScene>();
 
     /*for (int i = 1; i <= jop::Material::DefaultAttributes; ++i)
@@ -197,9 +199,6 @@ int main(int c, char* v[])
 
         jop::ResourceManager::unloadResource("jop_shader_" + std::to_string(i));
     }*/
-
-    if (&jop::ShaderManager::getShader(jop::Material::DefaultAttributes) == &jop::Shader::getDefault())
-        return EXIT_FAILURE;
 
     return JOP_MAIN_LOOP;
 }
