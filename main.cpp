@@ -157,8 +157,6 @@ int main(int c, char* v[])
                 jop::StateLoader::getInstance().loadState("Scene/test", true, true);
             else if (key == jop::Keyboard::K)
                 jop::StateLoader::getInstance().saveState("Scene/test", true, true);
-            else if (key == jop::Keyboard::P)
-                jop::Engine::setPaused(!jop::Engine::isPaused());
             else if (key == jop::Keyboard::C)
             {
                 static unsigned int created = 0;
