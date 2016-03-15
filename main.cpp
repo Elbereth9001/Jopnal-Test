@@ -15,6 +15,25 @@ public:
 
         auto attribs = jop::Material::DefaultAttributes;
 
+        //if (false)
+        {
+            createChild("envmap")->setPosition(-3.f, 0, -5);
+            //auto& record = getChild("envmap")->createComponent<jop::EnvironmentRecorder>(getRenderer());
+
+            jop::Material& envMat = jop::ResourceManager::getEmptyResource<jop::Material>("envMat",
+                jop::Material::Attribute::EnvironmentMap |
+                jop::Material::Attribute::Material |
+                jop::Material::Attribute::Phong);
+
+            //envMat.setMap(jop::Material::Map::Environment, *record.getTexture());
+            envMat.setMap(jop::Material::Map::Environment, jop::ResourceManager::getResource<jop::Cubemap>("drakeq_rt.tga", "drakeq_lf.tga", "drakeq_up.tga", "drakeq_dn.tga", "drakeq_bk.tga", "drakeq_ft.tga"));
+            envMat.setReflectivity(1.f)
+                  .setReflection(jop::Material::Reflection::Diffuse, jop::Color::Black)
+                  .setShininess(64.f);
+
+            getChild("envmap")->createComponent<jop::GenericDrawable>(getRenderer()).setModel(jop::Model(jop::ResourceManager::getNamedResource<jop::SphereMesh>("mirrorb", 1.f, 20, 20), envMat));
+        }
+
         createChild("pln")->setPosition(-2.5, -5, -5);
         getChild("pln")->createComponent<jop::RigidBody>(getWorld(), jop::ResourceManager::getNamedResource<jop::InfinitePlaneShape>("bigbcoll"), jop::RigidBody::Type::Static);
 
