@@ -55,6 +55,10 @@ public:
 
         cloneChild("Def2", "Def3", jop::Transform(*getChild("Def2").get()).setPosition(-5, -2, -8).rotate(54, 70, 1));
         
+        auto sens = createChild("sensor");
+        sens->setPosition(-5.f, -3.f, -8);
+        sens->createComponent<jop::RigidBody>(getWorld(), jop::ResourceManager::getNamedResource<jop::BoxShape>("boxcoll", 1.f), jop::RigidBody::Type::StaticSensor, 0.f);
+
         createChild("LightCaster");
         getChild("LightCaster")->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Point);
         getChild("LightCaster")->getComponent<jop::LightSource>()->setAttenuation(jop::LightSource::AttenuationPreset::_50).setCastShadows(true);
@@ -190,6 +194,10 @@ int main(int c, char* v[])
                 auto& obj = *jop::Engine::getCurrentScene().getChild("envmap");
                 obj.setActive(!obj.isActive());
             }
+            else if (key == jop::Keyboard::P)
+                jop::Engine::setState(jop::Engine::getState() == jop::Engine::State::Running ? jop::Engine::State::RenderOnly : jop::Engine::State::Running);
+            else if (key == jop::Keyboard::F)
+                jop::Engine::advanceFrame();
 
             if (key == jop::Keyboard::Escape)
                 closed();
