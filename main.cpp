@@ -12,8 +12,6 @@ public:
         : jop::Scene("SomeScene"),
           m_sine(0.f)
     {
-        getWorld().setDebugMode(true);
-
         auto attribs = jop::Material::DefaultAttributes;
 
         //if (false)
