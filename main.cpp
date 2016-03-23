@@ -14,6 +14,9 @@ public:
     {
         auto attribs = jop::Material::DefaultAttributes;
 
+        jop::Engine::setDeltaScale(2.f);
+        setDeltaScale(.5f);
+
         //if (false)
         {
             createChild("envmap")->setPosition(-4.5f, 0, -5);
@@ -34,7 +37,7 @@ public:
         }
 
         createChild("pln")->setPosition(-2.5, -5, -5);
-        getChild("pln")->createComponent<jop::RigidBody>(getWorld(), jop::ResourceManager::getNamedResource<jop::InfinitePlaneShape>("bigbcoll"), jop::RigidBody::Type::Static);
+        getChild("pln")->createComponent<jop::RigidBody>(getWorld(), jop::ResourceManager::getNamedResource<jop::InfinitePlaneShape>("bigbcoll"));
 
         jop::Material& def = jop::ResourceManager::getEmptyResource<jop::Material>("defmat", attribs);
         def.setMap(jop::Material::Map::Diffuse, jop::ResourceManager::getResource<jop::Texture2D>("container2.png"));
