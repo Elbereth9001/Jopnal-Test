@@ -64,11 +64,12 @@ public:
         sens->setPosition(-5.f, -3.f, -8);
         sens->createComponent<jop::RigidBody>(getWorld(), jop::ResourceManager::getNamedResource<jop::BoxShape>("boxcoll", 1.f), jop::RigidBody::Type::StaticSensor, 0.f);
 
-        createChild("LightCaster");
+        createChild("LightCaster")->createComponent<jop::SoundEffect>().setBuffer(jop::ResourceManager::getResource<jop::SoundBuffer>("piano2.wav")).setLoop(true).setListener(false).setAttenuation(100).setMinDistance(1.f);
+        getChild("LightCaster")->getComponent<jop::SoundEffect>()->play();
         getChild("LightCaster")->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Point);
         getChild("LightCaster")->getComponent<jop::LightSource>()->setAttenuation(jop::LightSource::AttenuationPreset::_50).setCastShadows(true);
         getChild("LightCaster")->createComponent<jop::GenericDrawable>(getRenderer()).setCastShadows(true);
-        getChild("LightCaster")->setPosition(-1.5f, 0.f, -0.f).setScale(0.3f);
+        getChild("LightCaster")->setPosition(-0.5f, 0.f, -3.f).setScale(0.3f);
 
         //obj->adoptChild(*getChild("LightCaster"));
 
@@ -82,6 +83,7 @@ public:
         createChild("Cam")/*->createComponent<jop::LightSource>("LC2", getRenderer(), jop::LightSource::Type::Spot)->setAttenuation(jop::LightSource::AttenuationPreset::_50)*/;
 
         getChild("Cam")->createComponent<jop::Camera>(getRenderer(), jop::Camera::Projection::Perspective);
+        getChild("Cam")->createComponent<jop::Listener>();
 
         // Ground
         {
@@ -120,7 +122,7 @@ public:
 
         jop::ResourceManager::getExistingResource<jop::Material>("defmat").setReflection(jop::Material::Reflection::Emission, jop::Color(col, col, col));
 
-        //getChild("LightCaster")->move(0.f, 2.f * dt * std::sin(8.f * m_sine), 2.f * dt * std::sin(4.f * m_sine));
+        getChild("LightCaster")->move(0.f, 2.f * dt * std::sin(8.f * m_sine), 2.f * dt * std::sin(4.f * m_sine));
     }
 
     void postUpdate(const float dt) override
