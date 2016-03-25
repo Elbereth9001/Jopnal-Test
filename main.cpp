@@ -64,14 +64,15 @@ public:
         sens->setPosition(-5.f, -3.f, -8);
         sens->createComponent<jop::RigidBody>(getWorld(), jop::ResourceManager::getNamedResource<jop::BoxShape>("boxcoll", 1.f), jop::RigidBody::Type::StaticSensor, 0.f);
 
-        createChild("LightCaster")->createComponent<jop::SoundEffect>().setBuffer(jop::ResourceManager::getResource<jop::SoundBuffer>("piano2.wav")).setLoop(true).setListener(false).setAttenuation(100).setMinDistance(1.f);
+        createChild("LightCaster")->createComponent<jop::SoundEffect>().setBuffer(jop::ResourceManager::getResource<jop::SoundBuffer>("32.wav")).setLoop(true).setPitch(2.f).setAttenuation(5).setMinDistance(1.f);
         getChild("LightCaster")->getComponent<jop::SoundEffect>()->play();
         getChild("LightCaster")->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Point);
         getChild("LightCaster")->getComponent<jop::LightSource>()->setAttenuation(jop::LightSource::AttenuationPreset::_50).setCastShadows(true);
         getChild("LightCaster")->createComponent<jop::GenericDrawable>(getRenderer()).setCastShadows(true);
         getChild("LightCaster")->setPosition(-0.5f, 0.f, -3.f).setScale(0.3f);
 
-        //obj->adoptChild(*getChild("LightCaster"));
+        getChild("Def")->adoptChild(getChild("LightCaster"));
+        findChild("LightCaster", true, true)->setParent(getChild("Def"));
 
         createChild("DirLight")->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Directional).setCastShadows(false);
         getChild("DirLight")->setActive(false);
@@ -115,14 +116,15 @@ public:
 
         getChild("Def")->rotate(0.f, dt / 4, dt / 2);
 
-        getChild("DirLight")->rotate(dt, 0, 0.f);
+        //getChild("DirLight")->rotate(dt, 0, 0.f);
         getChild("SpotLight")->rotate(0.f, std::sin(m_sine * 5) * dt / 1.5f, 0.f);
 
         const jop::uint8 col = static_cast<jop::uint8>(200 * std::max(0.f, std::sin(m_sine)));
 
         jop::ResourceManager::getExistingResource<jop::Material>("defmat").setReflection(jop::Material::Reflection::Emission, jop::Color(col, col, col));
 
-        getChild("LightCaster")->move(0.f, 2.f * dt * std::sin(8.f * m_sine), 2.f * dt * std::sin(4.f * m_sine));
+        findChild("LightCaster", true, true)->move(0.f, 2.f * dt * std::sin(8.f * m_sine), 2.f * dt * std::sin(4.f * m_sine));
+
     }
 
     void postUpdate(const float dt) override
@@ -210,6 +212,9 @@ int main(int c, char* v[])
 
             if (key == jop::Keyboard::Escape)
                 closed();
+
+            if (key == jop::Keyboard::R)
+                jop::Engine::getCurrentScene().getChild("def")->removeSelf();
         }
 
         void mouseMoved(const float x, const float y) override
