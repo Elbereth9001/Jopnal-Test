@@ -89,7 +89,7 @@ public:
         // Ground
         {
             auto attr = jop::Material::Attribute::AmbientConstant
-                | jop::Material::Attribute::Diffusemap
+                | jop::Material::Attribute::DiffuseMap
                 | jop::Material::Attribute::Material
                 | jop::Material::Attribute::Phong;
 
