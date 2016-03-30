@@ -16,6 +16,8 @@ public:
         : jop::Scene("SomeScene"),
           m_sine(0.f)
     {
+        getWorld().setDebugMode(true);
+
         auto attribs = jop::Material::DefaultAttributes;
 
         jop::Engine::setDeltaScale(2.f);
@@ -56,13 +58,13 @@ public:
         obj->setPosition(0.5, -0.2f, -4);
 
         cloneChild("Def", "Def2")->setPosition(-5.f, 0, -8).rotate(-45, 45, 0);
-        getChild("Def2")->createComponent<jop::RigidBody>(getWorld(), jop::ResourceManager::getNamedResource<jop::BoxShape>("boxcoll", 1.f), jop::RigidBody::Type::Dynamic, 1.f);
+        getChild("Def2")->createComponent<jop::RigidBody>(getWorld(), jop::ResourceManager::getNamedResource<jop::SphereShape>("boxcoll", 0.5f), jop::RigidBody::Type::Dynamic, 1.f);
 
-        cloneChild("Def2", "Def3", jop::Transform(*getChild("Def2").get()).setPosition(-5, -2, -8).rotate(54, 70, 1));
+        cloneChild("Def2", "Def3", jop::Transform(*getChild("Def2").get()).setPosition(-5, -2, -7.8f).rotate(54, 70, 1));
         
         auto sens = createChild("sensor");
         sens->setPosition(-5.f, -3.f, -8);
-        sens->createComponent<jop::RigidBody>(getWorld(), jop::ResourceManager::getNamedResource<jop::BoxShape>("boxcoll", 1.f), jop::RigidBody::Type::StaticSensor, 0.f);
+        sens->createComponent<jop::RigidBody>(getWorld(), jop::ResourceManager::getNamedResource<jop::BoxShape>("asdfshape", 1.f), jop::RigidBody::Type::StaticSensor);
 
         createChild("LightCaster")->createComponent<jop::SoundEffect>().setBuffer(jop::ResourceManager::getResource<jop::SoundBuffer>("32.wav")).setLoop(true).setPitch(2.f).setAttenuation(5).setMinDistance(1.f);
         getChild("LightCaster")->getComponent<jop::SoundEffect>()->play();
