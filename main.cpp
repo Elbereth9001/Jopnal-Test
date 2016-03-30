@@ -26,7 +26,7 @@ public:
         //if (false)
         {
             createChild("envmap")->setPosition(-4.5f, 0, -5);
-            auto& record = getChild("envmap")->createComponent<jop::EnvironmentRecorder>(getRenderer());
+            auto& record = findChild("envmap")->createComponent<jop::EnvironmentRecorder>(getRenderer());
 
             jop::Material& envMat = jop::ResourceManager::getEmptyResource<jop::Material>("envMat",
                 jop::Material::Attribute::EnvironmentMap |
@@ -39,11 +39,11 @@ public:
                   .setReflection(jop::Material::Reflection::Diffuse, jop::Color::Black)
                   .setShininess(512.f);
 
-            getChild("envmap")->createComponent<jop::GenericDrawable>(getRenderer()).setModel(jop::Model(jop::ResourceManager::getNamedResource<jop::SphereMesh>("mirrorb", 1.f, 40, 40), envMat));
+            findChild("envmap")->createComponent<jop::GenericDrawable>(getRenderer()).setModel(jop::Model(jop::ResourceManager::getNamedResource<jop::SphereMesh>("mirrorb", 1.f, 40, 40), envMat));
         }
 
         createChild("pln")->setPosition(-2.5, -5, -5);
-        getChild("pln")->createComponent<jop::RigidBody>(getWorld(), jop::ResourceManager::getNamedResource<jop::InfinitePlaneShape>("bigbcoll"));
+        findChild("pln")->createComponent<jop::RigidBody>(getWorld(), jop::RigidBody::ConstructInfo(jop::ResourceManager::getNamedResource<jop::InfinitePlaneShape>("bigbcoll")));
 
         jop::Material& def = jop::ResourceManager::getEmptyResource<jop::Material>("defmat", attribs);
         def.setMap(jop::Material::Map::Diffuse, jop::ResourceManager::getResource<jop::Texture2D>("container2.png"));
@@ -58,35 +58,35 @@ public:
         obj->setPosition(0.5, -0.2f, -4);
 
         cloneChild("Def", "Def2")->setPosition(-5.f, 0, -8).rotate(-45, 45, 0);
-        getChild("Def2")->createComponent<jop::RigidBody>(getWorld(), jop::ResourceManager::getNamedResource<jop::SphereShape>("boxcoll", 0.5f), jop::RigidBody::Type::Dynamic, 1.f);
+        findChild("Def2")->createComponent<jop::RigidBody>(getWorld(), jop::RigidBody::ConstructInfo(jop::ResourceManager::getNamedResource<jop::SphereShape>("boxcoll", 0.5f), jop::RigidBody::Type::Dynamic, 1.f));
 
-        cloneChild("Def2", "Def3", jop::Transform(*getChild("Def2").get()).setPosition(-5, -2, -7.8f).rotate(54, 70, 1));
+        cloneChild("Def2", "Def3", jop::Transform(*findChild("Def2").get()).setPosition(-5, -2, -7.8f).rotate(54, 70, 1));
         
         auto sens = createChild("sensor");
         sens->setPosition(-5.f, -3.f, -8);
-        sens->createComponent<jop::RigidBody>(getWorld(), jop::ResourceManager::getNamedResource<jop::BoxShape>("asdfshape", 1.f), jop::RigidBody::Type::StaticSensor);
+        sens->createComponent<jop::RigidBody>(getWorld(), jop::RigidBody::ConstructInfo(jop::ResourceManager::getNamedResource<jop::BoxShape>("asdfshape", 1.f), jop::RigidBody::Type::StaticSensor));
 
         createChild("LightCaster")->createComponent<jop::SoundEffect>().setBuffer(jop::ResourceManager::getResource<jop::SoundBuffer>("32.wav")).setLoop(true).setPitch(2.f).setAttenuation(5).setMinDistance(1.f);
-        getChild("LightCaster")->getComponent<jop::SoundEffect>()->play();
-        getChild("LightCaster")->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Point);
-        getChild("LightCaster")->getComponent<jop::LightSource>()->setAttenuation(jop::LightSource::AttenuationPreset::_50).setCastShadows(true);
-        getChild("LightCaster")->createComponent<jop::GenericDrawable>(getRenderer()).setCastShadows(true);
-        getChild("LightCaster")->setPosition(-0.5f, 0.f, -3.f).setScale(0.3f);
+        findChild("LightCaster")->getComponent<jop::SoundEffect>()->play();
+        findChild("LightCaster")->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Point);
+        findChild("LightCaster")->getComponent<jop::LightSource>()->setAttenuation(jop::LightSource::AttenuationPreset::_50).setCastShadows(true);
+        findChild("LightCaster")->createComponent<jop::GenericDrawable>(getRenderer()).setCastShadows(true);
+        findChild("LightCaster")->setPosition(-0.5f, 0.f, -3.f).setScale(0.3f);
 
-        getChild("Def")->adoptChild(getChild("LightCaster"));
-        findChild("LightCaster", true, true)->setParent(getChild("Def"));
+        findChild("Def")->adoptChild(findChild("LightCaster"));
+        findChild("LightCaster", true, true)->setParent(findChild("Def"));
 
         createChild("DirLight")->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Directional).setCastShadows(false);
-        getChild("DirLight")->setActive(false);
-        getChild("DirLight")->setPosition(-2.5f, 10.f, -5.f).setScale(30).setRotation(-glm::half_pi<float>(), 0.f, 0.f);
+        findChild("DirLight")->setActive(false);
+        findChild("DirLight")->setPosition(-2.5f, 10.f, -5.f).setScale(30).setRotation(-glm::half_pi<float>(), 0.f, 0.f);
 
         createChild("SpotLight")->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Spot).setAttenuation(jop::LightSource::AttenuationPreset::_320).setCutoff(glm::radians(10.f), glm::radians(12.f)).setCastShadows(true);
-        getChild("SpotLight")->rotate(0, glm::radians(5.f), 0);
+        findChild("SpotLight")->rotate(0, glm::radians(5.f), 0);
 
         createChild("Cam")/*->createComponent<jop::LightSource>("LC2", getRenderer(), jop::LightSource::Type::Spot)->setAttenuation(jop::LightSource::AttenuationPreset::_50)*/;
 
-        getChild("Cam")->createComponent<jop::Camera>(getRenderer(), jop::Camera::Projection::Perspective);
-        getChild("Cam")->createComponent<jop::Listener>();
+        findChild("Cam")->createComponent<jop::Camera>(getRenderer(), jop::Camera::Projection::Perspective);
+        findChild("Cam")->createComponent<jop::Listener>();
 
         // Ground
         {
@@ -111,15 +111,15 @@ public:
 
     void preUpdate(const float dt) override
     {
-        if (getChild("Def").expired())
+        if (findChild("Def").expired())
             return;
 
         m_sine += dt;
 
-        getChild("Def")->rotate(0.f, dt / 4, dt / 2);
+        findChild("Def")->rotate(0.f, dt / 4, dt / 2);
 
         //getChild("DirLight")->rotate(dt, 0, 0.f);
-        getChild("SpotLight")->rotate(0.f, std::sin(m_sine * 5) * dt / 1.5f, 0.f);
+        findChild("SpotLight")->rotate(0.f, std::sin(m_sine * 5) * dt / 1.5f, 0.f);
 
         const jop::uint8 col = static_cast<jop::uint8>(200 * std::max(0.f, std::sin(m_sine)));
 
@@ -133,7 +133,7 @@ public:
     {
         using jop::Keyboard;
         auto& h = *jop::Engine::getSubsystem<jop::Window>()->getEventHandler();
-        auto& cam = *getChild("Cam");
+        auto& cam = *findChild("Cam");
 
         const float speed = 4.f;
 
@@ -204,7 +204,7 @@ int main(int c, char* v[])
                 jop::Engine::getCurrentScene().getWorld().setDebugMode(!jop::Engine::getCurrentScene().getWorld().debugMode());
             else if (key == jop::Keyboard::Period)
             {
-                auto& obj = *jop::Engine::getCurrentScene().getChild("envmap");
+                auto& obj = *jop::Engine::getCurrentScene().findChild("envmap");
                 obj.setActive(!obj.isActive());
             }
             else if (key == jop::Keyboard::P)
@@ -216,12 +216,12 @@ int main(int c, char* v[])
                 closed();
 
             if (key == jop::Keyboard::R)
-                jop::Engine::getCurrentScene().getChild("def")->removeSelf();
+                jop::Engine::getCurrentScene().findChild("def")->removeSelf();
         }
 
         void mouseMoved(const float x, const float y) override
         {
-            auto& cam = *jop::Engine::getCurrentScene().getChild("Cam");
+            auto& cam = *jop::Engine::getCurrentScene().findChild("Cam");
 
             static float mx = 0.f;
             static float my = 0.f;
