@@ -58,7 +58,7 @@ public:
         obj->setPosition(0.5, -0.2f, -4);
 
         cloneChild("Def", "Def2")->setPosition(-5.f, 0, -8).rotate(-45, 45, 0);
-        findChild("Def2")->createComponent<jop::RigidBody>(getWorld(), jop::RigidBody::ConstructInfo(jop::ResourceManager::getNamedResource<jop::SphereShape>("boxcoll", 0.5f), jop::RigidBody::Type::Dynamic, 1.f));
+        findChild("Def2")->createComponent<jop::RigidBody>(getWorld(), jop::RigidBody::ConstructInfo(jop::ResourceManager::getNamedResource<jop::BoxShape>("boxcoll", 1.f), jop::RigidBody::Type::Dynamic, 1.f));
 
         cloneChild("Def2", "Def3", jop::Transform(*findChild("Def2").get()).setPosition(-5, -2, -7.8f).rotate(54, 70, 1));
         
