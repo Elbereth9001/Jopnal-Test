@@ -66,8 +66,8 @@ public:
         sens->setPosition(-5.f, -3.f, -8);
         sens->createComponent<jop::RigidBody>(getWorld(), jop::RigidBody::ConstructInfo(jop::ResourceManager::getNamedResource<jop::BoxShape>("asdfshape", 1.f), jop::RigidBody::Type::StaticSensor));
 
-        createChild("LightCaster")->createComponent<jop::SoundEffect>().setBuffer(jop::ResourceManager::getResource<jop::SoundBuffer>("32.wav")).setLoop(true).setPitch(2.f).setAttenuation(5).setMinDistance(1.f);
-        findChild("LightCaster")->getComponent<jop::SoundEffect>()->play();
+        //createChild("LightCaster")->createComponent<jop::SoundEffect>().setBuffer(jop::ResourceManager::getResource<jop::SoundBuffer>("32.wav")).setLoop(true).setPitch(2.f).setAttenuation(5).setMinDistance(1.f);
+        //findChild("LightCaster")->getComponent<jop::SoundEffect>()->play();
         findChild("LightCaster")->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Point);
         findChild("LightCaster")->getComponent<jop::LightSource>()->setAttenuation(jop::LightSource::AttenuationPreset::_50).setCastShadows(true);
         findChild("LightCaster")->createComponent<jop::GenericDrawable>(getRenderer()).setCastShadows(true);
