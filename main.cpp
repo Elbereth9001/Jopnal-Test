@@ -18,7 +18,7 @@ public:
     {
         getWorld().setDebugMode(true);
 
-        auto attribs = jop::Material::DefaultAttributes;
+        auto attribs = jop::Material::Attribute::DefaultLighting | jop::Material::Attribute::SpecularMap | jop::Material::Attribute::EmissionMap | jop::Material::Attribute::DiffuseMap;
 
         jop::Engine::setDeltaScale(2.f);
         setDeltaScale(.5f);
@@ -66,7 +66,7 @@ public:
         sens->setPosition(-5.f, -3.f, -8);
         sens->createComponent<jop::RigidBody>(getWorld(), jop::RigidBody::ConstructInfo(jop::ResourceManager::getNamedResource<jop::BoxShape>("asdfshape", 1.f), jop::RigidBody::Type::StaticSensor));
 
-        //createChild("LightCaster")->createComponent<jop::SoundEffect>().setBuffer(jop::ResourceManager::getResource<jop::SoundBuffer>("32.wav")).setLoop(true).setPitch(2.f).setAttenuation(5).setMinDistance(1.f);
+        createChild("LightCaster")/*->createComponent<jop::SoundEffect>().setBuffer(jop::ResourceManager::getResource<jop::SoundBuffer>("32.wav")).setLoop(true).setPitch(2.f).setAttenuation(5).setMinDistance(1.f);*/;
         //findChild("LightCaster")->getComponent<jop::SoundEffect>()->play();
         findChild("LightCaster")->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Point);
         findChild("LightCaster")->getComponent<jop::LightSource>()->setAttenuation(jop::LightSource::AttenuationPreset::_50).setCastShadows(true);
@@ -119,7 +119,8 @@ public:
         findChild("Def")->rotate(0.f, dt / 4, dt / 2);
 
         //getChild("DirLight")->rotate(dt, 0, 0.f);
-        findChild("SpotLight")->rotate(0.f, std::sin(m_sine * 5) * dt / 1.5f, 0.f);
+        //findChild("SpotLight")->rotate(0.f, std::sin(m_sine * 5) * dt / 1.5f, 0.f);
+        jop::broadcast("[=SpotLight] rotate 0 " + std::to_string(std::sin(m_sine * 5) * dt / 1.5f) + " 0");
 
         const jop::uint8 col = static_cast<jop::uint8>(200 * std::max(0.f, std::sin(m_sine)));
 
@@ -235,7 +236,7 @@ int main(int c, char* v[])
     jop::Engine::getSubsystem<jop::Window>()->setMouseMode(jop::Mouse::Mode::Frozen);
     jop::Engine::getSubsystem<jop::Window>()->setEventHandler<EventHandler>();
 
-    if (&jop::ShaderManager::getShader(jop::Material::DefaultAttributes) == &jop::Shader::getDefault())
+    if (&jop::ShaderManager::getShader(jop::Material::Attribute::Default) == &jop::Shader::getError())
         return EXIT_FAILURE;
 
     jop::Engine::createScene<SomeScene>();
