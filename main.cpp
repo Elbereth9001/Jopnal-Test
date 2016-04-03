@@ -30,7 +30,6 @@ public:
 
             jop::Material& envMat = jop::ResourceManager::getEmptyResource<jop::Material>("envMat",
                 jop::Material::Attribute::EnvironmentMap |
-                jop::Material::Attribute::Material |
                 jop::Material::Attribute::Phong);
 
             envMat.setMap(jop::Material::Map::Environment, *record.getTexture());
@@ -92,12 +91,11 @@ public:
         {
             auto attr = jop::Material::Attribute::AmbientConstant
                 | jop::Material::Attribute::DiffuseMap
-                | jop::Material::Attribute::Material
                 | jop::Material::Attribute::Phong;
 
             auto ground = createChild("grnd");
             auto& comp = ground->createComponent<jop::GenericDrawable>(getRenderer());
-            comp.setModel(jop::Model(jop::ResourceManager::getNamedResource<jop::BoxMesh>("rectasdf", 10.f, true), jop::ResourceManager::getEmptyResource<jop::Material>("grndmat", attr)));
+            comp.setModel(jop::Model(jop::ResourceManager::getNamedResource<jop::BoxMesh>("rectasdf", 10.f, true), jop::ResourceManager::getEmptyResource<jop::Material>("grndmat", attr).setMap(jop::Material::Map::Diffuse, jop::Texture2D::getDefault())));
 
             comp.getModel().getMaterial()->setReflection(jop::Color::Black, jop::Color::Gray, jop::Color::Gray, jop::Color::Black);
             comp.setReceiveShadows(true);
