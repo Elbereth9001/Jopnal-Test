@@ -29,8 +29,8 @@ public:
             auto& record = findChild("envmap")->createComponent<jop::EnvironmentRecorder>(getRenderer());
 
             jop::Material& envMat = jop::ResourceManager::getEmptyResource<jop::Material>("envMat",
-                jop::Material::Attribute::EnvironmentMap |
-                jop::Material::Attribute::DefaultLighting);
+                                                                                          jop::Material::Attribute::EnvironmentMap |
+                                                                                          jop::Material::Attribute::DefaultLighting);
 
             envMat.setMap(jop::Material::Map::Environment, *record.getTexture());
             //envMat.setMap(jop::Material::Map::Environment, jop::ResourceManager::getResource<jop::Cubemap>("drakeq_rt.tga", "drakeq_lf.tga", "drakeq_up.tga", "drakeq_dn.tga", "drakeq_bk.tga", "drakeq_ft.tga"));
