@@ -30,13 +30,14 @@ public:
 
             jop::Material& envMat = jop::ResourceManager::getEmptyResource<jop::Material>("envMat",
                 jop::Material::Attribute::EnvironmentMap |
-                jop::Material::Attribute::Phong);
+                jop::Material::Attribute::DefaultLighting);
 
             envMat.setMap(jop::Material::Map::Environment, *record.getTexture());
             //envMat.setMap(jop::Material::Map::Environment, jop::ResourceManager::getResource<jop::Cubemap>("drakeq_rt.tga", "drakeq_lf.tga", "drakeq_up.tga", "drakeq_dn.tga", "drakeq_bk.tga", "drakeq_ft.tga"));
             envMat.setReflectivity(1.f)
                   .setReflection(jop::Material::Reflection::Diffuse, jop::Color::Black)
-                  .setShininess(512.f);
+                  .setShininess(512.f)
+                  .removeAttributes(jop::Material::Attribute::AmbientConstant);
 
             findChild("envmap")->createComponent<jop::GenericDrawable>(getRenderer()).setModel(jop::Model(jop::ResourceManager::getNamedResource<jop::SphereMesh>("mirrorb", 1.f, 40, 40), envMat));
         }
@@ -96,6 +97,7 @@ public:
             auto ground = createChild("grnd");
             auto& comp = ground->createComponent<jop::GenericDrawable>(getRenderer());
             comp.setModel(jop::Model(jop::ResourceManager::getNamedResource<jop::BoxMesh>("rectasdf", 10.f, true), jop::ResourceManager::getEmptyResource<jop::Material>("grndmat", attr).setMap(jop::Material::Map::Diffuse, jop::Texture2D::getDefault())));
+
 
             comp.getModel().getMaterial()->setReflection(jop::Color::Black, jop::Color::Gray, jop::Color::Gray, jop::Color::Black);
             comp.setReceiveShadows(true);
