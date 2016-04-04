@@ -96,10 +96,8 @@ public:
 
             auto ground = createChild("grnd");
             auto& comp = ground->createComponent<jop::GenericDrawable>(getRenderer());
-            comp.setModel(jop::Model(jop::ResourceManager::getNamedResource<jop::BoxMesh>("rectasdf", 10.f, true), jop::ResourceManager::getEmptyResource<jop::Material>("grndmat", attr).setMap(jop::Material::Map::Diffuse, jop::Texture2D::getDefault())));
+            comp.setModel(jop::Model(jop::ResourceManager::getNamedResource<jop::BoxMesh>("rectasdf", 10.f, true), jop::ResourceManager::getEmptyResource<jop::Material>("grndmat", attr).setMap(jop::Material::Map::Diffuse, jop::Texture2D::getDefault()).setReflection(jop::Color::Black, jop::Color::Gray, jop::Color::Gray, jop::Color::Black)));
 
-
-            comp.getModel().getMaterial()->setReflection(jop::Color::Black, jop::Color::Gray, jop::Color::Gray, jop::Color::Black);
             comp.setReceiveShadows(true);
 
             ground->setPosition(-2.5f, -0.f, -5.f);
