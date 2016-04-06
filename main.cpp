@@ -16,8 +16,7 @@ public:
         : jop::Scene("SomeScene"),
           m_sine(0.f)
     {
-        jop::Model asdfa;
-        asdfa.load("nanosuit2.3ds");
+        //createChild("nano")->createComponent<jop::ModelLoader>().load("nanosuit2.3ds");
 
         getWorld().setDebugMode(true);
 
