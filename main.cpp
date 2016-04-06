@@ -16,6 +16,9 @@ public:
         : jop::Scene("SomeScene"),
           m_sine(0.f)
     {
+        jop::Model asdfa;
+        asdfa.load("nanosuit2.3ds");
+
         getWorld().setDebugMode(true);
 
         auto attribs = jop::Material::Attribute::DefaultLighting | jop::Material::Attribute::SpecularMap | jop::Material::Attribute::EmissionMap | jop::Material::Attribute::DiffuseMap;
