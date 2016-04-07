@@ -121,7 +121,7 @@ public:
 
         //getChild("DirLight")->rotate(dt, 0, 0.f);
         //findChild("SpotLight")->rotate(0.f, std::sin(m_sine * 5) * dt / 1.5f, 0.f);
-        jop::broadcast("[=SpotLight] rotate 0 " + std::to_string(std::sin(m_sine * 5) * dt / 1.5f) + " 0");
+        jop::broadcast("[=SpotLight] rotate 0 " + std::to_string(std::sin(m_sine * 4) * dt / 1.f) + " 0");
 
         const jop::uint8 col = static_cast<jop::uint8>(200 * std::max(0.f, std::sin(m_sine)));
 
