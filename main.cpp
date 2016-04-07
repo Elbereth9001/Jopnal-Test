@@ -16,7 +16,8 @@ public:
         : jop::Scene("SomeScene"),
           m_sine(0.f)
     {
-        //createChild("nano")->createComponent<jop::ModelLoader>().load("nanosuit2.3ds");
+        createChild("nano")->createComponent<jop::ModelLoader>().load("nanosuit2.3ds");
+        findChild("nano")->setScale(0.25f).setPosition(-2.5f, -4.f, -4.f);
 
         getWorld().setDebugMode(true);
 
