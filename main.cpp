@@ -72,7 +72,7 @@ public:
         createChild("LightCaster")/*->createComponent<jop::SoundEffect>().setBuffer(jop::ResourceManager::getResource<jop::SoundBuffer>("32.wav")).setLoop(true).setPitch(2.f).setAttenuation(5).setMinDistance(1.f);*/;
         //findChild("LightCaster")->getComponent<jop::SoundEffect>()->play();
         findChild("LightCaster")->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Point);
-        findChild("LightCaster")->getComponent<jop::LightSource>()->setAttenuation(jop::LightSource::AttenuationPreset::_50).setCastShadows(true);
+        findChild("LightCaster")->getComponent<jop::LightSource>()->setAttenuation(50).setCastShadows(true);
         findChild("LightCaster")->createComponent<jop::GenericDrawable>(getRenderer()).setCastShadows(true);
         findChild("LightCaster")->setPosition(-0.5f, 0.f, -3.f).setScale(0.3f);
 
@@ -83,7 +83,7 @@ public:
         findChild("DirLight")->setActive(false);
         findChild("DirLight")->setPosition(-2.5f, 10.f, -5.f).setScale(30).setRotation(-glm::half_pi<float>(), 0.f, 0.f);
 
-        createChild("SpotLight")->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Spot).setAttenuation(jop::LightSource::AttenuationPreset::_320).setCutoff(glm::radians(10.f), glm::radians(12.f)).setCastShadows(true);
+        createChild("SpotLight")->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Spot).setAttenuation(320).setCutoff(glm::radians(10.f), glm::radians(12.f)).setCastShadows(true);
         findChild("SpotLight")->rotate(0, glm::radians(5.f), 0);
 
         createChild("Cam")/*->createComponent<jop::LightSource>("LC2", getRenderer(), jop::LightSource::Type::Spot)->setAttenuation(jop::LightSource::AttenuationPreset::_50)*/;
