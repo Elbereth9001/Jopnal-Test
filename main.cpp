@@ -106,6 +106,11 @@ public:
             ground->setPosition(-2.5f, -0.f, -5.f);
         }
 
+        // Skybox
+        {
+            createChild("sky")->createComponent<jop::SkySphere>(getRenderer()).setMap(jop::ResourceManager::getResource<jop::Texture2D>("starmap.jpg"));
+        }
+
         //if (!jop::StateLoader::saveState("Scene/test", true, true))
         //    jop::Engine::exit();
     }
