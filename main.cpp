@@ -108,7 +108,18 @@ public:
 
         // Skybox
         {
-            createChild("sky")->createComponent<jop::SkySphere>(getRenderer()).setMap(jop::ResourceManager::getResource<jop::Texture2D>("starmap.jpg"));
+            createChild("sky")
+                
+                ->createComponent<jop::SkySphere>(getRenderer()).setMap(jop::ResourceManager::getResource<jop::Texture2D>("starmap.jpg"));
+
+                //->createComponent<jop::SkyBox>(getRenderer()).setMap(jop::ResourceManager::getNamedResource<jop::Cubemap>("skycube",
+                //
+                //"starfield_rt.tga",
+                //"starfield_lf.tga",
+                //"starfield_up.tga",
+                //"starfield_dn.tga",
+                //"starfield_bk.tga",
+                //"starfield_ft.tga"));
         }
 
         //if (!jop::StateLoader::saveState("Scene/test", true, true))
