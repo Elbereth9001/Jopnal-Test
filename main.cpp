@@ -19,12 +19,10 @@ public:
         createChild("nano")->createComponent<jop::ModelLoader>().load("nanosuit2.3ds");
         findChild("nano")->setScale(0.25f).setPosition(-2.5f, -4.f, -4.f);
 
-        getWorld().setDebugMode(true);
+        //getWorld().setDebugMode(true);
 
         auto attribs = jop::Material::Attribute::DefaultLighting | jop::Material::Attribute::SpecularMap | jop::Material::Attribute::EmissionMap | jop::Material::Attribute::DiffuseMap;
 
-        jop::Engine::setDeltaScale(2.f);
-        setDeltaScale(.5f);
 
         //if (false)
         {
@@ -121,7 +119,66 @@ public:
                 //"starfield_bk.tga",
                 //"starfield_ft.tga"));
         }
+        
+        struct EventHandler : jop::WindowEventHandler
+        {
+            EventHandler(jop::Window& w)
+                : jop::WindowEventHandler(w)
+            {}
 
+            void closed() override
+            {
+                jop::Engine::exit();
+            }
+            void keyPressed(const int key, const int, const int) override
+            {
+                if (key == jop::Keyboard::L)
+                    jop::StateLoader::getInstance().loadState("Scene/test", true, true);
+                else if (key == jop::Keyboard::K)
+                    jop::StateLoader::getInstance().saveState("Scene/test", true, true);
+                else if (key == jop::Keyboard::C)
+                {
+                    static unsigned int created = 0;
+                    JOP_DEBUG_INFO("Objects created: " << created++);
+
+                    jop::Engine::getCurrentScene().cloneChild("Def2", "def", jop::Transform().setPosition(-2.5f, 1.f, -5.f));
+                }
+                else if (key == jop::Keyboard::Comma)
+                    jop::Engine::getCurrentScene().getWorld().setDebugMode(!jop::Engine::getCurrentScene().getWorld().debugMode());
+                else if (key == jop::Keyboard::Period)
+                {
+                    auto& obj = *jop::Engine::getCurrentScene().findChild("envmap");
+                    obj.setActive(!obj.isActive());
+                }
+                else if (key == jop::Keyboard::P)
+                    jop::Engine::setState(jop::Engine::getState() == jop::Engine::State::Running ? jop::Engine::State::RenderOnly : jop::Engine::State::Running);
+                else if (key == jop::Keyboard::F)
+                    jop::Engine::advanceFrame();
+
+                if (key == jop::Keyboard::Escape)
+                    closed();
+
+                if (key == jop::Keyboard::R)
+                    jop::Engine::getCurrentScene().findChild("def")->removeSelf();
+            }
+
+            void mouseMoved(const float x, const float y) override
+            {
+                if (!jop::Engine::hasCurrentScene())
+                    return;
+
+                auto& cam = *jop::Engine::getCurrentScene().findChild("Cam");
+
+                static float mx = 0.f;
+                static float my = 0.f;
+                mx += x;
+                my = glm::clamp(my + y, -85.f, 85.f);
+
+                cam.setRotation(glm::radians(-my), glm::radians(-mx), 0.f);
+            }
+        };
+
+        jop::Engine::getSubsystem<jop::Window>()->setEventHandler<EventHandler>();
         //if (!jop::StateLoader::saveState("Scene/test", true, true))
         //    jop::Engine::exit();
     }
@@ -171,12 +228,12 @@ public:
     }
 };
 
-JOP_REGISTER_LOADABLE(a, SomeScene)[](std::unique_ptr<jop::Scene>& s, const jop::json::Value& val)
+JOP_REGISTER_LOADABLE(a, SomeScene)[](std::unique_ptr<jop::Scene>&, const jop::json::Value&)
 {
-    auto sc = std::make_unique<SomeScene>();
-    sc->m_sine = static_cast<float>(val["sine"].GetDouble());
-
-    s = std::move(sc);
+    //auto sc = std::make_unique<SomeScene>(1);
+    //sc->m_sine = static_cast<float>(val["sine"].GetDouble());
+    //
+    //s = std::move(sc);
     return true;
 }
 JOP_END_LOADABLE_REGISTRATION(SomeScene)
@@ -194,69 +251,36 @@ JOP_END_SAVEABLE_REGISTRATION(SomeScene)
 int main(int c, char* v[])
 {
     JOP_ENGINE_INIT("JopTestProject", c , v);
-
-    struct EventHandler : jop::WindowEventHandler
-    {
-        EventHandler(jop::Window& w)
-            : jop::WindowEventHandler(w)
-        {}
-
-        void closed() override
-        {
-            jop::Engine::exit();
-        }
-        void keyPressed(const int key, const int, const int) override
-        {
-            if (key == jop::Keyboard::L)
-                jop::StateLoader::getInstance().loadState("Scene/test", true, true);
-            else if (key == jop::Keyboard::K)
-                jop::StateLoader::getInstance().saveState("Scene/test", true, true);
-            else if (key == jop::Keyboard::C)
-            {
-                static unsigned int created = 0;
-                JOP_DEBUG_INFO("Objects created: " << created++);
-
-                jop::Engine::getCurrentScene().cloneChild("Def2", "def", jop::Transform().setPosition(-2.5f, 1.f, -5.f));
-            }
-            else if (key == jop::Keyboard::Comma)
-                jop::Engine::getCurrentScene().getWorld().setDebugMode(!jop::Engine::getCurrentScene().getWorld().debugMode());
-            else if (key == jop::Keyboard::Period)
-            {
-                auto& obj = *jop::Engine::getCurrentScene().findChild("envmap");
-                obj.setActive(!obj.isActive());
-            }
-            else if (key == jop::Keyboard::P)
-                jop::Engine::setState(jop::Engine::getState() == jop::Engine::State::Running ? jop::Engine::State::RenderOnly : jop::Engine::State::Running);
-            else if (key == jop::Keyboard::F)
-                jop::Engine::advanceFrame();
-
-            if (key == jop::Keyboard::Escape)
-                closed();
-
-            if (key == jop::Keyboard::R)
-                jop::Engine::getCurrentScene().findChild("def")->removeSelf();
-        }
-
-        void mouseMoved(const float x, const float y) override
-        {
-            auto& cam = *jop::Engine::getCurrentScene().findChild("Cam");
-
-            static float mx = 0.f;
-            static float my = 0.f;
-            mx += x;
-            my = glm::clamp(my + y, -85.f, 85.f);
-
-            cam.setRotation(glm::radians(-my), glm::radians(-mx), 0.f);
-        }
-    };
+    
 
     jop::Engine::getSubsystem<jop::Window>()->setMouseMode(jop::Mouse::Mode::Frozen);
-    jop::Engine::getSubsystem<jop::Window>()->setEventHandler<EventHandler>();
 
     if (&jop::ShaderManager::getShader(jop::Material::Attribute::Default) == &jop::Shader::getError())
         return EXIT_FAILURE;
 
-    jop::Engine::createScene<SomeScene>();
+    class LoadingScene : public jop::Scene
+    {
+    public:
+
+        LoadingScene()
+            : jop::Scene("loadScene")
+        {
+            createChild("cam")->createComponent<jop::Camera>(getRenderer(), jop::Camera::Projection::Orthographic);
+
+            createChild("rect")->createComponent<jop::GenericDrawable>(getRenderer()).getModel().setMesh(jop::ResourceManager::getNamedResource<jop::RectangleMesh>("rectmsha", 100.f));
+
+            createChild("text")->createComponent<jop::Text>(getRenderer()).setString("Loading...").setColor(jop::Color::White).getObject()->move(-88, -120, 0).setScale(800, 800, 1);
+        }
+
+        void preUpdate(const float dt) override
+        {
+            findChild("rect")->rotate(0, 0, dt);
+        }
+    };
+
+    jop::Engine::createScene<LoadingScene>();
+
+    jop::Engine::createScene<SomeScene, true>();
 
     /*for (int i = 1; i <= jop::Material::DefaultAttributes; ++i)
     {
