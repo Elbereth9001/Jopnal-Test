@@ -32,14 +32,13 @@ public:
 
             jop::Material& envMat = jop::ResourceManager::getEmptyResource<jop::Material>("envMat",
                                                                                           jop::Material::Attribute::EnvironmentMap |
-                                                                                          jop::Material::Attribute::DefaultLighting);
+                                                                                          jop::Material::Attribute::Phong, false);
 
             envMat.setMap(jop::Material::Map::Environment, *record.getTexture());
             //envMat.setMap(jop::Material::Map::Environment, jop::ResourceManager::getResource<jop::Cubemap>("drakeq_rt.tga", "drakeq_lf.tga", "drakeq_up.tga", "drakeq_dn.tga", "drakeq_bk.tga", "drakeq_ft.tga"));
             envMat.setReflectivity(1.f)
                   .setReflection(jop::Material::Reflection::Diffuse, jop::Color::Black)
-                  .setShininess(512.f)
-                  .removeAttributes(jop::Material::Attribute::AmbientConstant);
+                  .setShininess(512.f);
 
             findChild("envmap")->createComponent<jop::GenericDrawable>(getRenderer()).setModel(jop::Model(jop::ResourceManager::getNamedResource<jop::SphereMesh>("mirrorb", 1.f, 40, 40), envMat));
         }
