@@ -61,7 +61,7 @@ public:
         cloneChild("Def", "Def2")->setPosition(-5.f, 0, -8).rotate(-45, 45, 0);
         findChild("Def2")->createComponent<jop::RigidBody>(getWorld(), jop::RigidBody::ConstructInfo(jop::ResourceManager::getNamedResource<jop::BoxShape>("boxcoll", 1.f), jop::RigidBody::Type::Dynamic, 1.f));
 
-        cloneChild("Def2", "Def3", jop::Transform(*findChild("Def2").get()).setPosition(-5, -2, -7.8f).rotate(54, 70, 1));
+        cloneChild("Def2", "Def3")->setPosition(-5, -2, -7.8f).rotate(54, 70, 1);
         
         auto sens = createChild("sensor");
         sens->setPosition(-5.f, -3.f, -8);
@@ -141,7 +141,7 @@ public:
                     static unsigned int created = 0;
                     JOP_DEBUG_INFO("Objects created: " << created++);
 
-                    jop::Engine::getCurrentScene().cloneChild("Def2", "def", jop::Transform().setPosition(-2.5f, 1.f, -5.f));
+                    jop::Engine::getCurrentScene().cloneChild("Def2", "def")->setPosition(-2.5f, 1.f, -5.f);
                 }
                 else if (key == jop::Keyboard::Comma)
                     jop::Engine::getCurrentScene().getWorld().setDebugMode(!jop::Engine::getCurrentScene().getWorld().debugMode());
