@@ -18,7 +18,7 @@ public:
     {
         auto mod = createChild("");
         mod->createComponent<jop::ModelLoader>().load("nanosuit2.3ds");
-        mod->setScale(0.25f).setPosition(-2.5f, -4.f, -4.f);
+        mod->scale(0.25f).setPosition(-2.5f, -4.f, -4.f);
         
         //getWorld().setDebugMode(true);
 
@@ -51,7 +51,6 @@ public:
         def.setMap(jop::Material::Map::Specular, jop::ResourceManager::getResource<jop::Texture2D>("container2_specular.png", false));
         def.setMap(jop::Material::Map::Emission, jop::ResourceManager::getResource<jop::Texture2D>("matrix.jpg", true));
         def.setShininess(64.f);
-        def.setReflection(jop::Material::Reflection::Emission, jop::Color::Black);
         
         auto obj = createChild("Def");
         obj->createComponent<jop::GenericDrawable>(getRenderer())
@@ -62,10 +61,6 @@ public:
         findChild("Def2")->createComponent<jop::RigidBody>(getWorld(), jop::RigidBody::ConstructInfo(jop::ResourceManager::getNamedResource<jop::BoxShape>("boxcoll", 1.f), jop::RigidBody::Type::Dynamic, 1.f));
 
         cloneChild("Def2", "Def3")->setPosition(-5, -2, -7.8f).rotate(54, 70, 1);
-        
-        auto sens = createChild("sensor");
-        sens->setPosition(-5.f, -3.f, -8);
-        sens->createComponent<jop::RigidBody>(getWorld(), jop::RigidBody::ConstructInfo(jop::ResourceManager::getNamedResource<jop::BoxShape>("asdfshape", 1.f), jop::RigidBody::Type::StaticSensor));
 
         createChild("LightCaster")/*->createComponent<jop::SoundEffect>().setBuffer(jop::ResourceManager::getResource<jop::SoundBuffer>("32.wav")).setLoop(true).setPitch(2.f).setAttenuation(5).setMinDistance(1.f);*/;
         //findChild("LightCaster")->getComponent<jop::SoundEffect>()->play();
@@ -139,7 +134,7 @@ public:
                 else if (key == jop::Keyboard::C)
                 {
                     static unsigned int created = 0;
-                    JOP_DEBUG_INFO("Objects created: " << created++);
+                    JOP_DEBUG_DIAG("Objects created: " << created++);
 
                     jop::Engine::getCurrentScene().cloneChild("Def2", "def")->setPosition(-2.5f, 1.f, -5.f);
                 }
