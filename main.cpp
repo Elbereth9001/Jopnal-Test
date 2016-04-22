@@ -250,7 +250,7 @@ int main(int c, char* v[])
 
     jop::Engine::getSubsystem<jop::Window>()->setMouseMode(jop::Mouse::Mode::Frozen);
 
-    if (&jop::ShaderManager::getShader(jop::Material::Attribute::Default) == &jop::Shader::getError())
+    if (&jop::ShaderAssembler::getShader(jop::Material::Attribute::Default) == &jop::Shader::getError())
         return EXIT_FAILURE;
 
     class LoadingScene : public jop::Scene
