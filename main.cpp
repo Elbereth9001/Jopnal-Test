@@ -50,7 +50,7 @@ public:
         def.setMap(jop::Material::Map::Diffuse, jop::ResourceManager::getResource<jop::Texture2D>("container2.png", true));
         def.setMap(jop::Material::Map::Specular, jop::ResourceManager::getResource<jop::Texture2D>("container2_specular.png", false));
         def.setMap(jop::Material::Map::Emission, jop::ResourceManager::getResource<jop::Texture2D>("matrix.jpg", true));
-        def.setShininess(64.f);
+        def.setShininess(512);
         
         auto obj = createChild("Def");
         obj->createComponent<jop::GenericDrawable>(getRenderer())
@@ -127,11 +127,7 @@ public:
             }
             void keyPressed(const int key, const int, const int) override
             {
-                if (key == jop::Keyboard::L)
-                    jop::StateLoader::getInstance().loadState("Scene/test", true, true);
-                else if (key == jop::Keyboard::K)
-                    jop::StateLoader::getInstance().saveState("Scene/test", true, true);
-                else if (key == jop::Keyboard::C)
+                if (key == jop::Keyboard::C)
                 {
                     static unsigned int created = 0;
                     JOP_DEBUG_DIAG("Objects created: " << created++);
