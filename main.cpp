@@ -16,6 +16,15 @@ public:
         : jop::Scene("SomeScene"),
           m_sine(0.f)
     {
+        auto& stream = createChild("safsas")->createComponent<jop::SoundStream>();
+        stream.setPath("32.wav");
+        stream.setSpatialized(false);
+        stream.setVolume(100.f);
+        stream.setLoop(true);
+        stream.play();
+
+        jop::Listener::setGlobalVolume(100.f);
+
         auto mod = createChild("");
         mod->createComponent<jop::ModelLoader>().load("nanosuit2.3ds");
         mod->scale(0.25f).setPosition(-2.5f, -4.f, -4.f);
@@ -86,8 +95,7 @@ public:
 
         // Ground
         {
-            auto attr = jop::Material::Attribute::AmbientConstant
-                | jop::Material::Attribute::DiffuseMap
+            auto attr = jop::Material::Attribute::DiffuseMap
                 | jop::Material::Attribute::Phong;
 
             auto ground = createChild("grnd");
@@ -172,6 +180,8 @@ public:
         jop::Engine::getSubsystem<jop::Window>()->setEventHandler<EventHandler>();
         //if (!jop::StateLoader::saveState("Scene/test", true, true))
         //    jop::Engine::exit();
+
+        printDebugTree();
     }
 
     void preUpdate(const float dt) override
