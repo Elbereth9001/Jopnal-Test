@@ -76,7 +76,9 @@ public:
         findChild("LightCaster")->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Point);
         findChild("LightCaster")->getComponent<jop::LightSource>()->setAttenuation(10).setCastShadows(true);
         findChild("LightCaster")->createComponent<jop::GenericDrawable>(getRenderer()).setCastShadows(true);
-        findChild("LightCaster")->setPosition(-0.5f, 0.f, -3.f).setScale(0.3f);
+
+        using Res = jop::Object::TransformRestriction;
+        findChild("LightCaster")->setPosition(-0.5f, 0.f, -3.f).setScale(0.3f).setIgnoreTransform(TransformRestriction::Rotation | Res::TranslationX | Res::TranslationY);
 
         findChild("Def")->adoptChild(findChild("LightCaster"));
         findChild("LightCaster", true, true)->setParent(findChild("Def"));
