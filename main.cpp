@@ -203,8 +203,9 @@ public:
 
         jop::ResourceManager::getExistingResource<jop::Material>("defmat").setReflection(jop::Material::Reflection::Emission, jop::Color(col, col, col));
 
-        findChild("LightCaster", true, true)->move(0.f, 2.f * dt * std::sin(8.f * m_sine), 2.f * dt * std::sin(4.f * m_sine));
+        findChild("LightCaster", true, true)->move(0.f, 2.f * dt * std::sin(8.f * m_sine), 2.f * dt * std::sin(4.f * m_sine)).lookAt(findChild("Def")->getGlobalPosition());
 
+        
     }
 
     void postUpdate(const float dt) override
