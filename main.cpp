@@ -18,12 +18,12 @@ public:
     {
         auto& stream = createChild("safsas")->createComponent<jop::SoundStream>();
         stream.setPath("32.wav");
-        stream.setSpatialized(false);
-        stream.setVolume(100.f);
-        stream.setLoop(true);
-        stream.play();
-
-        jop::Listener::setGlobalVolume(100.f);
+        //stream.setSpatialized(false);
+        //stream.setVolume(100.f);
+        //stream.setLoop(true);
+        //stream.play();
+        //
+        //jop::Listener::setGlobalVolume(100.f);
 
         auto mod = createChild("");
         mod->createComponent<jop::ModelLoader>().load("nanosuit2.3ds");
@@ -231,26 +231,6 @@ public:
         }
     }
 };
-
-JOP_REGISTER_LOADABLE(a, SomeScene)[](std::unique_ptr<jop::Scene>&, const jop::json::Value&)
-{
-    //auto sc = std::make_unique<SomeScene>(1);
-    //sc->m_sine = static_cast<float>(val["sine"].GetDouble());
-    //
-    //s = std::move(sc);
-    return true;
-}
-JOP_END_LOADABLE_REGISTRATION(SomeScene)
-
-JOP_REGISTER_SAVEABLE(a, SomeScene)[](const jop::Scene& s, jop::json::Value& v, jop::json::Value::AllocatorType& a) -> bool
-{
-    v.AddMember(jop::json::StringRef("id"), jop::json::StringRef(s.getID().c_str()), a)
-     .AddMember(jop::json::StringRef("active"), s.isActive(), a)
-     .AddMember(jop::json::StringRef("sine"), static_cast<const SomeScene&>(s).m_sine, a);
-
-    return true;
-}
-JOP_END_SAVEABLE_REGISTRATION(SomeScene)
 
 int main(int c, char* v[])
 {
