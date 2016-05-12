@@ -73,7 +73,7 @@ public:
 
         createChild("LightCaster")/*->createComponent<jop::SoundEffect>().setBuffer(jop::ResourceManager::getResource<jop::SoundBuffer>("32.wav")).setLoop(true).setPitch(2.f).setAttenuation(5).setMinDistance(1.f);*/;
         //findChild("LightCaster")->getComponent<jop::SoundEffect>()->play();
-        findChild("LightCaster")->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Point);
+        findChild("LightCaster")->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Point).setIntensity(jop::LightSource::Intensity::Diffuse, jop::Color(255.f, 255.f, 255.f));
         findChild("LightCaster")->getComponent<jop::LightSource>()->setAttenuation(10).setCastShadows(true);
         findChild("LightCaster")->createComponent<jop::GenericDrawable>(getRenderer()).setCastShadows(true);
 
