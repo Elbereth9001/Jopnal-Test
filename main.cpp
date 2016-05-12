@@ -29,10 +29,11 @@ public:
         mod->createComponent<jop::ModelLoader>().load("nanosuit2.3ds");
         mod->scale(0.25f).setPosition(-2.5f, -4.f, -4.f);
         
+
         //getWorld().setDebugMode(true);
 
         auto attribs = jop::Material::Attribute::DefaultLighting | jop::Material::Attribute::SpecularMap | jop::Material::Attribute::EmissionMap | jop::Material::Attribute::DiffuseMap;
-
+        jop::Material::getDefault().setReflection(jop::Material::Reflection::Emission, jop::Color(10.f, 10.f, 10.f));
 
         //if (false)
         {
@@ -73,7 +74,7 @@ public:
 
         createChild("LightCaster")/*->createComponent<jop::SoundEffect>().setBuffer(jop::ResourceManager::getResource<jop::SoundBuffer>("32.wav")).setLoop(true).setPitch(2.f).setAttenuation(5).setMinDistance(1.f);*/;
         //findChild("LightCaster")->getComponent<jop::SoundEffect>()->play();
-        findChild("LightCaster")->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Point).setIntensity(jop::LightSource::Intensity::Diffuse, jop::Color(255.f, 255.f, 255.f));
+        findChild("LightCaster")->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Point)/*.setIntensity(jop::LightSource::Intensity::Specular, jop::Color(2.f, 2.f, 2.f))*/;
         findChild("LightCaster")->getComponent<jop::LightSource>()->setAttenuation(10).setCastShadows(true);
         findChild("LightCaster")->createComponent<jop::GenericDrawable>(getRenderer()).setCastShadows(true);
 
