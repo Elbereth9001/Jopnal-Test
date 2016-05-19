@@ -41,12 +41,13 @@ namespace jd
 
             if (!cam.expired())
             {
-                static float mx = 0.f;
-                static float my = 0.f;
-                mx += x;
-                my = glm::clamp(my + y, -85.f, 85.f);
+                static glm::vec2 totals(0.f);
+                const glm::vec2 delta = glm::vec2(x, y) * 0.5f;
 
-                cam->setRotation(glm::radians(-my), glm::radians(-mx), 0.f);
+                totals.x += delta.x;
+                totals.y = glm::clamp(totals.y + delta.y, -85.f, 85.f);
+
+                cam->setRotation(glm::radians(-totals.y), glm::radians(-totals.x), 0.f);
             }
         }
     };

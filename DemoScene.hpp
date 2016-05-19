@@ -12,10 +12,13 @@ namespace jd
 
     public:
 
+        float mouseX;
+        float mouseY;
+
         DemoScene()
             : jop::Scene(typeid(DemoScene).name())
         {
-            std::this_thread::sleep_for(std::chrono::seconds(7));
+            std::this_thread::sleep_for(std::chrono::seconds(5));
 
             // Camera & audio listener
             {
@@ -23,12 +26,19 @@ namespace jd
                       .getObject()->createComponent<jop::Listener>();
             }
 
-            // Skysphere
+            // Sky sphere
             {
-                createChild("sky")->createComponent<jop::SkySphere>(getRenderer()).setMap(jop::ResourceManager::getResource<jop::Texture2D>("starmap.jpg", true));
+                createChild("sky")->createComponent<jop::SkySphere>(getRenderer())
+                    
+                    .setMap(jop::ResourceManager::getResource<jop::Texture2D>("starmap.jpg", true));
             }
-
+            
             jop::Engine::getSubsystem<jop::Window>()->setEventHandler<EventHandler>();
+        }
+
+        ~DemoScene() override
+        {
+            jop::Engine::getSubsystem<jop::Window>()->setDefaultEventHandler();
         }
 
         void preUpdate(const float /*dt*/) override

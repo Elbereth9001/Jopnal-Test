@@ -38,10 +38,10 @@ namespace jd
                 .setIntensity(jop::Color::White, jop::Color(50.f, 50.f, 50.f), jop::Color::Black);
 
             // Text
-            createChild("text")->move(0.5f, 0.f, 0.f).setScale(8.f).createComponent<jop::Text>(getRenderer())
+            createChild("text")->move(0.f, 0.f, 0.f).setScale(8.f).createComponent<jop::Text>(getRenderer())
 
                 .setFont(RM::getResource<jop::Font>("Furore.otf", 64))
-                .setString("please wait")
+                .setString("please stand by")
                 .setColor(jop::Color(0.05f, 0.05f, 1.f));
         }
 
