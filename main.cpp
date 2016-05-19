@@ -16,26 +16,13 @@ public:
         : jop::Scene("SomeScene"),
           m_sine(0.f)
     {
-        auto& stream = createChild("safsas")->createComponent<jop::SoundStream>();
-        stream.setPath("32.wav");
-        //stream.setSpatialized(false);
-        //stream.setVolume(100.f);
-        //stream.setLoop(true);
-        //stream.play();
-        //
-        //jop::Listener::setGlobalVolume(100.f);
-
         auto mod = createChild("");
         mod->createComponent<jop::ModelLoader>().load("nanosuit2.3ds");
         mod->scale(0.25f).setPosition(-2.5f, -4.f, -4.f);
-        
-
-        //getWorld().setDebugMode(true);
 
         auto attribs = jop::Material::Attribute::DefaultLighting | jop::Material::Attribute::SpecularMap | jop::Material::Attribute::EmissionMap | jop::Material::Attribute::DiffuseMap;
         jop::Material::getDefault().setReflection(jop::Material::Reflection::Emission, jop::Color(10.f, 10.f, 10.f));
 
-        //if (false)
         {
             createChild("envmap")->setPosition(-4.5f, 0, -5);
             auto& record = findChild("envmap")->createComponent<jop::EnvironmentRecorder>(getRenderer());
@@ -45,7 +32,6 @@ public:
                                                                                           jop::Material::Attribute::Phong, false);
             
             envMat.setMap(jop::Material::Map::Environment, *record.getTexture());
-            //envMat.setMap(jop::Material::Map::Environment, jop::ResourceManager::getResource<jop::Cubemap>("drakeq_rt.tga", "drakeq_lf.tga", "drakeq_up.tga", "drakeq_dn.tga", "drakeq_bk.tga", "drakeq_ft.tga"));
             envMat.setReflectivity(1.f)
                   .setReflection(jop::Material::Reflection::Diffuse, jop::Color::Black).setReflection(jop::Material::Reflection::Specular, jop::Color::White)
                   .setShininess(512.f);
@@ -56,25 +42,20 @@ public:
         createChild("pln")->setPosition(-2.5, -5, -5);
         findChild("pln")->createComponent<jop::RigidBody>(getWorld(), jop::RigidBody::ConstructInfo(jop::ResourceManager::getNamedResource<jop::InfinitePlaneShape>("bigbcoll")));
 
-        jop::Material& def = jop::ResourceManager::getEmptyResource<jop::Material>("defmat", attribs);
-        def.setMap(jop::Material::Map::Diffuse, jop::ResourceManager::getResource<jop::Texture2D>("container2.png", true));
-        def.setMap(jop::Material::Map::Specular, jop::ResourceManager::getResource<jop::Texture2D>("container2_specular.png", false));
-        def.setMap(jop::Material::Map::Emission, jop::ResourceManager::getResource<jop::Texture2D>("matrix.jpg", true));
-        def.setShininess(512);
-        
-        auto obj = createChild("Def");
-        obj->createComponent<jop::GenericDrawable>(getRenderer())
-           .setModel(jop::Model(jop::Mesh::getDefault(), def));
-        obj->setPosition(0.5, -0.2f, -4);
+        {
+            jop::Material& def = jop::ResourceManager::getEmptyResource<jop::Material>("defmat", attribs);
+            def.setMap(jop::Material::Map::Diffuse, jop::ResourceManager::getResource<jop::Texture2D>("container2.png", true));
+            def.setMap(jop::Material::Map::Specular, jop::ResourceManager::getResource<jop::Texture2D>("container2_specular.png", false));
+            def.setMap(jop::Material::Map::Emission, jop::ResourceManager::getResource<jop::Texture2D>("matrix.jpg", true));
+            def.setShininess(512);
 
-        cloneChild("Def", "Def2")->setPosition(-5.f, 0, -8).rotate(-45, 45, 0);
-        findChild("Def2")->createComponent<jop::RigidBody>(getWorld(), jop::RigidBody::ConstructInfo(jop::ResourceManager::getNamedResource<jop::BoxShape>("boxcoll", 1.f), jop::RigidBody::Type::Dynamic, 1.f));
+            auto obj = createChild("Def");
+            obj->createComponent<jop::GenericDrawable>(getRenderer())
+                .setModel(jop::Model(jop::Mesh::getDefault(), def));
+            obj->setPosition(0.5, -0.2f, -4);
+        }
 
-        cloneChild("Def2", "Def3")->setPosition(-5, -2, -7.8f).rotate(54, 70, 1);
-
-        createChild("LightCaster")/*->createComponent<jop::SoundEffect>().setBuffer(jop::ResourceManager::getResource<jop::SoundBuffer>("32.wav")).setLoop(true).setPitch(2.f).setAttenuation(5).setMinDistance(1.f);*/;
-        //findChild("LightCaster")->getComponent<jop::SoundEffect>()->play();
-        findChild("LightCaster")->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Point)/*.setIntensity(jop::LightSource::Intensity::Specular, jop::Color(2.f, 2.f, 2.f))*/;
+        createChild("LightCaster")->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Point);
         findChild("LightCaster")->getComponent<jop::LightSource>()->setAttenuation(10).setCastShadows(true);
         findChild("LightCaster")->createComponent<jop::GenericDrawable>(getRenderer()).setCastShadows(true);
 
@@ -84,16 +65,10 @@ public:
         findChild("Def")->adoptChild(findChild("LightCaster"));
         findChild("LightCaster", true, true)->setParent(findChild("Def"));
 
-        createChild("DirLight")->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Directional).setCastShadows(false);
-        findChild("DirLight")->setActive(false);
-        findChild("DirLight")->setPosition(-2.5f, 10.f, -5.f).setScale(30).setRotation(-glm::half_pi<float>(), 0.f, 0.f);
-
         createChild("SpotLight")->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Spot).setAttenuation(30).setCutoff(glm::radians(10.f), glm::radians(12.f)).setCastShadows(true);
-        findChild("SpotLight")->rotate(0, glm::radians(5.f), 0);
+        findChild("SpotLight")->rotate(0, glm::radians(5.f), 0).move(0, 0, -0.5f);
 
-        createChild("Cam")/*->createComponent<jop::LightSource>("LC2", getRenderer(), jop::LightSource::Type::Spot)->setAttenuation(jop::LightSource::AttenuationPreset::_50)*/;
-
-        findChild("Cam")->createComponent<jop::Camera>(getRenderer(), jop::Camera::Projection::Perspective);
+        createChild("Cam")->createComponent<jop::Camera>(getRenderer(), jop::Camera::Projection::Perspective);
         findChild("Cam")->createComponent<jop::Listener>();
 
         // Ground
@@ -112,18 +87,7 @@ public:
 
         // Skybox
         {
-            createChild("sky")
-                
-                ->createComponent<jop::SkySphere>(getRenderer()).setMap(jop::ResourceManager::getResource<jop::Texture2D>("starmap.jpg", true));
-
-                //->createComponent<jop::SkyBox>(getRenderer()).setMap(jop::ResourceManager::getNamedResource<jop::Cubemap>("skycube",
-                //
-                //"starfield_rt.tga",
-                //"starfield_lf.tga",
-                //"starfield_up.tga",
-                //"starfield_dn.tga",
-                //"starfield_bk.tga",
-                //"starfield_ft.tga"));
+            createChild("sky")->createComponent<jop::SkySphere>(getRenderer()).setMap(jop::ResourceManager::getResource<jop::Texture2D>("starmap.jpg", true));
         }
         
         struct EventHandler : jop::WindowEventHandler
@@ -138,15 +102,9 @@ public:
             }
             void keyPressed(const int key, const int, const int) override
             {
-                if (key == jop::Keyboard::C)
-                {
-                    static unsigned int created = 0;
-                    JOP_DEBUG_DIAG("Objects created: " << created++);
-
-                    jop::Engine::getCurrentScene().cloneChild("Def2", "def")->setPosition(-2.5f, 1.f, -5.f);
-                }
-                else if (key == jop::Keyboard::Comma)
+                if (key == jop::Keyboard::Comma)
                     jop::Engine::getCurrentScene().getWorld().setDebugMode(!jop::Engine::getCurrentScene().getWorld().debugMode());
+
                 else if (key == jop::Keyboard::Period)
                 {
                     auto& obj = *jop::Engine::getCurrentScene().findChild("envmap");
@@ -154,6 +112,7 @@ public:
                 }
                 else if (key == jop::Keyboard::P)
                     jop::Engine::setState(jop::Engine::getState() == jop::Engine::State::Running ? jop::Engine::State::RenderOnly : jop::Engine::State::Running);
+
                 else if (key == jop::Keyboard::F)
                     jop::Engine::advanceFrame();
 
@@ -181,10 +140,6 @@ public:
         };
 
         jop::Engine::getSubsystem<jop::Window>()->setEventHandler<EventHandler>();
-        //if (!jop::StateLoader::saveState("Scene/test", true, true))
-        //    jop::Engine::exit();
-
-        printDebugTree();
     }
 
     void preUpdate(const float dt) override
@@ -196,8 +151,6 @@ public:
 
         findChild("Def")->rotate(0.f, dt / 4, dt / 2);
 
-        //getChild("DirLight")->rotate(dt, 0, 0.f);
-        //findChild("SpotLight")->rotate(0.f, std::sin(m_sine * 5) * dt / 1.5f, 0.f);
         jop::broadcast("[=SpotLight] rotate 0 " + std::to_string(std::sin(m_sine * 4) * dt / 1.f) + " 0");
 
         const jop::uint8 col = static_cast<jop::uint8>(200 * std::max(0.f, std::sin(m_sine)));
@@ -205,8 +158,6 @@ public:
         jop::ResourceManager::getExistingResource<jop::Material>("defmat").setReflection(jop::Material::Reflection::Emission, jop::Color(col, col, col));
 
         findChild("LightCaster", true, true)->move(0.f, 2.f * dt * std::sin(8.f * m_sine), 2.f * dt * std::sin(4.f * m_sine)).lookAt(findChild("Def")->getGlobalPosition());
-
-        
     }
 
     void postUpdate(const float dt) override
@@ -218,18 +169,13 @@ public:
         const float speed = 4.f;
 
         if (h.keyDown(Keyboard::A) || h.keyDown(Keyboard::D))
-        {
             cam.move((h.keyDown(Keyboard::D) ? 1.f : -1.f) * dt * speed * cam.getGlobalRight());
-        }
-        if (h.keyDown(Keyboard::W) || h.keyDown(Keyboard::S))
-        {
 
+        if (h.keyDown(Keyboard::W) || h.keyDown(Keyboard::S))
             cam.move((h.keyDown(Keyboard::W) ? 1.f : -1.f) * dt * speed * cam.getGlobalFront());
-        }
+
         if (h.keyDown(Keyboard::Space) || h.keyDown(Keyboard::LShift))
-        {
             cam.move((h.keyDown(Keyboard::Space) ? 1.f : -1.f) * dt * speed * cam.getGlobalUp());
-        }
     }
 };
 
@@ -237,11 +183,7 @@ int main(int c, char* v[])
 {
     JOP_ENGINE_INIT("JopTestProject", c , v);
     
-
     jop::Engine::getSubsystem<jop::Window>()->setMouseMode(jop::Mouse::Mode::Frozen);
-
-    if (&jop::ShaderAssembler::getShader(jop::Material::Attribute::Default) == &jop::Shader::getError())
-        return EXIT_FAILURE;
 
     class LoadingScene : public jop::Scene
     {
@@ -264,17 +206,7 @@ int main(int c, char* v[])
     };
 
     jop::Engine::createScene<LoadingScene>();
-
     jop::Engine::createScene<SomeScene, true>();
-
-    /*for (int i = 1; i <= jop::Material::DefaultAttributes; ++i)
-    {
-        JOP_DEBUG_INFO("Compiling shader: " << i);
-        if (&jop::ShaderManager::getShader(i) == &jop::Shader::getDefault())
-            return EXIT_FAILURE;
-
-        jop::ResourceManager::unloadResource("jop_shader_" + std::to_string(i));
-    }*/
 
     return JOP_MAIN_LOOP;
 }
