@@ -4,6 +4,34 @@
 
 namespace jd
 {
+    class WaveTranslator : public jop::Component
+    {
+        JOP_GENERIC_COMPONENT_CLONE(WaveTranslator);
+
+        float m_sine;
+        const float m_scale;
+
+    public:
+
+        WaveTranslator(jop::Object& obj, const float scale)
+            : jop::Component(obj, 0),
+              m_sine(glm::half_pi<float>()),
+              m_scale(scale)
+        {}
+
+        WaveTranslator(const WaveTranslator& other, jop::Object& newObj)
+            : jop::Component(other, newObj),
+              m_scale(other.m_scale)
+        {}
+
+        void update(const float deltaTime) override
+        {
+            m_sine += deltaTime;
+
+            getObject()->move(0.f, std::sin(m_sine) * m_scale * deltaTime, 0.f);
+        }
+    };
+
     class DemoScene : public jop::Scene
     {
     private:
@@ -12,28 +40,59 @@ namespace jd
 
     public:
 
-        float mouseX;
-        float mouseY;
-
         DemoScene()
             : jop::Scene(typeid(DemoScene).name())
         {
-            std::this_thread::sleep_for(std::chrono::seconds(5));
+            using namespace jop;
+            using RM = ResourceManager;
+            using MA = Material::Attribute;
+
+            std::this_thread::sleep_for(std::chrono::seconds(7));
+
+            // Lights
+            {
+                using LS = LightSource;
+                createChild("dirlight")->setPosition(0.f, 100.f, 0.f).lookAt(0.f, -1.f, 0.f).createComponent<LS>(getRenderer(), LS::Type::Directional)
+                    .setIntensity(Color::Black, Color::Black, Color::Black);
+
+                createChild("spotlight1")->setPosition(0.f, -10.f, 0.f)
+                    .createComponent<LS>(getRenderer(), LS::Type::Point)
+                    .setIntensity(Color::Black, Color::White, Color::White)
+                    .setAttenuation(75.f)
+                    .setCastShadows(true).
+
+                getObject()->createComponent<GenericDrawable>(getRenderer())
+                    .setModel(Model(RM::getNamedResource<SphereMesh>("spotbulb", 0.05f, 10, 10),
+                                    RM::getEmptyResource<Material>("spotbulbmat", false)
+                                    .setReflection(Material::Reflection::Solid, Color::White * 10.f)));
+            }
+
+            // Ground
+            {
+                auto& mat = RM::getEmptyResource<Material>("groundmat", MA::DefaultLighting | MA::DiffuseMap)
+                    .setReflection(Material::Reflection::Ambient, Color(0x666666FF))
+                    .setReflection(Material::Reflection::Specular, Color::Black);
+
+                createChild("ground")->rotate(-glm::half_pi<float>(), 0.f, 0.f).createComponent<GenericDrawable>(getRenderer())
+                    .setCastShadows(false)
+                    .setModel(Model(RM::getNamedResource<RectangleMesh>("groundmesh", 50.f), mat));
+            }
 
             // Camera & audio listener
             {
-                createChild("Cam")->createComponent<jop::Camera>(getRenderer(), jop::Camera::Projection::Perspective)
-                      .getObject()->createComponent<jop::Listener>();
+                createChild("cam")->setPosition(0.f, 2.5f, 24.f)
+                    .createComponent<Camera>(getRenderer(), Camera::Projection::Perspective)
+                    .getObject()->createComponent<Listener>();
             }
 
             // Sky sphere
             {
-                createChild("sky")->createComponent<jop::SkySphere>(getRenderer())
+                createChild("sky")->createComponent<SkySphere>(getRenderer())
                     
-                    .setMap(jop::ResourceManager::getResource<jop::Texture2D>("starmap.jpg", true));
+                    .setMap(ResourceManager::getResource<Texture2D>("starmap.jpg", true));
             }
             
-            jop::Engine::getSubsystem<jop::Window>()->setEventHandler<EventHandler>();
+            Engine::getSubsystem<Window>()->setEventHandler<EventHandler>();
         }
 
         ~DemoScene() override
@@ -41,9 +100,16 @@ namespace jd
             jop::Engine::getSubsystem<jop::Window>()->setDefaultEventHandler();
         }
 
-        void preUpdate(const float /*dt*/) override
+        void preUpdate(const float dt) override
         {
+            // Point light 1
+            {
+                const float speed = 5.f;
+                auto obj = findChild("spotlight1");
 
+                if (!obj->getComponent<WaveTranslator>() && obj->move(0.f, speed * dt, 0.f).getGlobalPosition().y > 7.f)
+                    obj->createComponent<WaveTranslator>(3.5f);
+            }
         }
 
         void postUpdate(const float dt) override
@@ -51,7 +117,7 @@ namespace jd
             using jop::Keyboard;
             auto& h = *jop::Engine::getSubsystem<jop::Window>()->getEventHandler();
 
-            auto cam = findChild("Cam");
+            auto cam = findChild("cam");
 
             if (!cam.expired())
             {

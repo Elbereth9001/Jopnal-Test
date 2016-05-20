@@ -24,7 +24,10 @@ namespace jd
             if (key == Keyboard::Escape)
                 closed();
 
-            if ((mods & Keyboard::Modifier::Control) != 0 && key == Keyboard::S)
+            else if (jop::Engine::hasCurrentScene() && key == Keyboard::T)
+                jop::Engine::getCurrentScene().printDebugTree();
+
+            else if ((mods & Keyboard::Modifier::Control) != 0 && key == Keyboard::S)
             {
                 jop::SettingManager::save();
             }
@@ -37,7 +40,7 @@ namespace jd
             if (!Engine::hasCurrentScene())
                 return;
 
-            auto cam = Engine::getCurrentScene().findChild("Cam");
+            auto cam = Engine::getCurrentScene().findChild("cam");
 
             if (!cam.expired())
             {
