@@ -26,7 +26,7 @@ namespace jd
 
                     .setMesh(RM::getNamedResource<jop::RectangleMesh>("logoMesh", 2.f))
                     .setMaterial(RM::getEmptyResource<jop::Material>("logoMat", MAT::DefaultLighting)
-                    .setMap(jop::Material::Map::Diffuse, RM::getResource<jop::Texture2D>("jop.png", true))
+                    .setMap(jop::Material::Map::Diffuse, RM::getResource<jop::Texture2D>("jop.png", true, true))
                     .setReflection(jop::Color(0x222222FF), jop::Color::White, jop::Color::Black, jop::Color::Black));
             }
 
@@ -75,7 +75,7 @@ namespace jd
                     jop::Engine::signalNewScene();
                     return;
                 }
-
+                
                 text->setColor(newColor);
                 auto& mat = jop::ResourceManager::getExistingResource<jop::Material>("logoMat");
                 mat.setReflection(jop::Material::Reflection::Diffuse, jop::Color(mat.getReflection(jop::Material::Reflection::Diffuse).colors, newColor.alpha));

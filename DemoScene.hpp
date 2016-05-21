@@ -47,7 +47,7 @@ namespace jd
             using RM = ResourceManager;
             using MA = Material::Attribute;
 
-            std::this_thread::sleep_for(std::chrono::seconds(7));
+            //std::this_thread::sleep_for(std::chrono::seconds(7));
 
             // Lights
             {
@@ -62,7 +62,7 @@ namespace jd
                     .setCastShadows(true).
 
                 getObject()->createComponent<GenericDrawable>(getRenderer())
-                    .setModel(Model(RM::getNamedResource<SphereMesh>("spotbulb", 0.05f, 10, 10),
+                    .setModel(Model(RM::getNamedResource<SphereMesh>("spotbulb", 0.075f, 10, 10),
                                     RM::getEmptyResource<Material>("spotbulbmat", false)
                                     .setReflection(Material::Reflection::Solid, Color::White * 10.f)));
             }
@@ -87,9 +87,12 @@ namespace jd
 
             // Sky sphere
             {
+                auto& map = ResourceManager::getResource<Texture2D>("starmap.jpg", true, false);
+                map.getSampler().setFilterMode(TextureSampler::Filter::Bilinear);
+
                 createChild("sky")->createComponent<SkySphere>(getRenderer())
                     
-                    .setMap(ResourceManager::getResource<Texture2D>("starmap.jpg", true));
+                    .setMap(map);
             }
             
             Engine::getSubsystem<Window>()->setEventHandler<EventHandler>();
