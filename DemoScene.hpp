@@ -138,7 +138,7 @@ namespace jd
                     auto& stream = createComponent<jop::SoundStream>();
                     stream.setID(1);
                     stream.setPath("music.ogg");
-                    stream.setVolume(0.f);
+                    stream.setLoop(true).setVolume(0.f);
                     stream.play();
                     stream.setOffset(62.f);
                 }
