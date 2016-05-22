@@ -1,5 +1,7 @@
 #pragma once
 #include "EventHandler.hpp"
+#include "Spawner.hpp"
+#include "MirrorBall.hpp"
 
 
 namespace jd
@@ -47,15 +49,13 @@ namespace jd
             using RM = ResourceManager;
             using MA = Material::Attribute;
 
-            //std::this_thread::sleep_for(std::chrono::seconds(7));
-
             // Lights
             {
                 using LS = LightSource;
                 createChild("dirlight")->setPosition(0.f, 100.f, 0.f).lookAt(0.f, -1.f, 0.f).createComponent<LS>(getRenderer(), LS::Type::Directional)
                     .setIntensity(Color::Black, Color::Black, Color::Black);
 
-                createChild("spotlight1")->setPosition(0.f, -10.f, 0.f)
+                createChild("pointlight1")->setPosition(0.f, -10.f, 0.f)
                     .createComponent<LS>(getRenderer(), LS::Type::Point)
                     .setIntensity(Color::Black, Color::White, Color::White)
                     .setAttenuation(75.f)
@@ -65,6 +65,21 @@ namespace jd
                     .setModel(Model(RM::getNamedResource<SphereMesh>("spotbulb", 0.075f, 10, 10),
                                     RM::getEmptyResource<Material>("spotbulbmat", false)
                                     .setReflection(Material::Reflection::Solid, Color::White * 10.f)));
+
+                auto& stream = findChild("pointlight1")->createComponent<SoundStream>();
+                stream.setPath("pulse.wav");
+                stream.setLoop(true).setSpatialized(true).setAttenuation(3.5f).setVolume(0.f).setMinDistance(5.f);
+                stream.play();
+            }
+
+            // Spinning spawner
+            {
+                createChild("spawn")->setPosition(0.f, 4.f, 0.f).createComponent<Spawner>(getRenderer());
+            }
+
+            // Mirror ball
+            {
+                createChild("mirror")->setPosition(0.f, 4.f, 0.f).createComponent<MirrorBall>(getRenderer());
             }
 
             // Ground
@@ -91,8 +106,7 @@ namespace jd
                 map.getSampler().setFilterMode(TextureSampler::Filter::Bilinear);
 
                 createChild("sky")->createComponent<SkySphere>(getRenderer())
-                    
-                    .setMap(map);
+                    .setMap(map).getModel();
             }
             
             Engine::getSubsystem<Window>()->setEventHandler<EventHandler>();
@@ -108,10 +122,32 @@ namespace jd
             // Point light 1
             {
                 const float speed = 5.f;
-                auto obj = findChild("spotlight1");
+                auto obj = findChild("pointlight1");
+
+                if (obj->getGlobalPosition().y > -0.1f)
+                {
+                    findChild("spawn")->setActive(true);
+                    findChild("mirror")->findChild("ball")->getComponent<jop::GenericDrawable>()
+                        ->getModel().getMaterial()->setReflection(jop::Material::Reflection::Specular, jop::Color::White);
+                }
 
                 if (!obj->getComponent<WaveTranslator>() && obj->move(0.f, speed * dt, 0.f).getGlobalPosition().y > 7.f)
+                {
                     obj->createComponent<WaveTranslator>(3.5f);
+
+                    auto& stream = createComponent<jop::SoundStream>();
+                    stream.setID(1);
+                    stream.setPath("music.ogg");
+                    stream.setVolume(0.f);
+                    stream.play();
+                    stream.setOffset(62.f);
+                }
+
+                auto streamComp = getComponent<jop::SoundStream>(1);
+                if (streamComp)
+                    streamComp->setVolume(std::min(5.f, streamComp->getVolume() + dt * 0.25f));
+
+                obj->getComponent<jop::SoundStream>()->setVolume(obj->getGlobalPosition().y * 10.f);
             }
         }
 

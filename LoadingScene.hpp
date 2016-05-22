@@ -51,6 +51,13 @@ namespace jd
                     .setString("please stand by")
                     .setColor(jop::Color(0.05f, 0.05f, 1.f));
             }
+
+            // Audio
+            {
+                auto& stream = createComponent<jop::SoundStream>();
+                stream.setPath("pulse2.wav");
+                stream.setLoop(true).play().setPitch(0.82f);
+            }
         }
 
         ~LoadingScene() override
@@ -69,6 +76,8 @@ namespace jd
                 auto text = findChild("text")->getComponent<jop::Text>();
 
                 const jop::Color newColor(text->getColor().colors, text->getColor().alpha - deltaTime * 1.25f);
+
+                getComponent<jop::SoundStream>()->setVolume(100.f * text->getColor().alpha);
 
                 if (newColor.alpha <= 0.f)
                 {
