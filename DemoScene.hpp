@@ -145,7 +145,7 @@ namespace jd
 
                 auto streamComp = getComponent<jop::SoundStream>(1);
                 if (streamComp)
-                    streamComp->setVolume(std::min(5.f, streamComp->getVolume() + dt * 0.25f));
+                    streamComp->setVolume(std::min(7.5f, streamComp->getVolume() + dt * 1.f));
 
                 obj->getComponent<jop::SoundStream>()->setVolume(obj->getGlobalPosition().y * 10.f);
             }

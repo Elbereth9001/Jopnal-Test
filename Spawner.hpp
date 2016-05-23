@@ -37,7 +37,7 @@ namespace jd
                 child->setPosition(basePos.x * posMult[i].x, basePos.y, basePos.z * posMult[i].y);
                 child->setIgnoreTransform(Object::Rotation);
 
-                child->createComponent<GenericDrawable>(rend).setModel(Model(baseMesh, baseMat)).setReflected(false);
+                child->createComponent<GenericDrawable>(rend).setModel(Model(baseMesh, baseMat));
             }
         }
 

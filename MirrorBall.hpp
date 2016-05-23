@@ -27,7 +27,7 @@ namespace jd
                .setShininess(256.f)
                .setReflection(Color::Black, Color::Black, Color::Black, Color::Black);
 
-            ballObj->createComponent<GenericDrawable>(rend).setModel(Model(mesh, mat));
+            ballObj->createComponent<GenericDrawable>(rend).setModel(Model(mesh, mat)).setReflected(false);
         }
 
         void update(const float deltaTime) override
