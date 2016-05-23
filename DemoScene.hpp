@@ -49,6 +49,8 @@ namespace jd
             using RM = ResourceManager;
             using MA = Material::Attribute;
 
+            //getWorld().setDebugMode(true);
+
             // Lights
             {
                 using LS = LightSource;
@@ -91,6 +93,11 @@ namespace jd
                 createChild("ground")->rotate(-glm::half_pi<float>(), 0.f, 0.f).createComponent<GenericDrawable>(getRenderer())
                     .setCastShadows(false)
                     .setModel(Model(RM::getNamedResource<RectangleMesh>("groundmesh", 50.f), mat));
+
+                RigidBody::ConstructInfo info(RM::getNamedResource<InfinitePlaneShape>("groundshape", glm::vec3(0.f, 0.f, 1.f)));
+                info.restitution = 1.f;
+
+                findChild("ground")->createComponent<RigidBody>(getWorld(), info);
             }
 
             // Camera & audio listener

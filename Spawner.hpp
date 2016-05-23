@@ -6,10 +6,15 @@ namespace jd
 {
     class Spawner : public jop::Component
     {
+        float m_elapsed;
+        jop::Renderer& m_rend;
+
     public:
 
         Spawner(jop::Object& obj, jop::Renderer& rend)
-            : jop::Component(obj, 0)
+            : jop::Component(obj, 0),
+              m_elapsed(0.f),
+              m_rend(rend)
         {
             using namespace jop;
             using RM = ResourceManager;
@@ -44,6 +49,30 @@ namespace jd
         void update(const float deltaTime) override
         {
             getObject()->rotate(0.f, deltaTime * 0.4f, 0.f);
+
+            if ((m_elapsed += deltaTime) > 0.1f)
+            {
+                jop::Randomizer r;
+
+                auto& root = getObject()->getChildren()[r.range<int>(0, 3)];
+                auto& point = root.getGlobalPosition();
+
+                auto& mat = jop::ResourceManager::getExistingResource<jop::Material>("spawnbasemat");
+                auto& mesh = jop::ResourceManager::getExistingResource<jop::SphereMesh>("spawnbasemesh");
+
+                auto newObj = root.createChild("asdf");
+
+                newObj->setPosition(point);
+                newObj->scale(0.5f);
+                newObj->setIgnoreParent(true);
+                newObj->createComponent<jop::GenericDrawable>(m_rend).setModel(jop::Model(mesh, mat));
+
+                jop::RigidBody::ConstructInfo info(jop::ResourceManager::getNamedResource<jop::SphereShape>("asdfshape", 0.35f * newObj->getLocalScale().x), jop::RigidBody::Type::Dynamic, 1.f);
+                info.restitution = 1.f;
+                newObj->createComponent<jop::RigidBody>(getObject()->getScene().getWorld(), info);
+
+                m_elapsed = 0.f;
+            }
         }
     };
 }
