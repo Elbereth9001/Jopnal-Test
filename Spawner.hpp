@@ -8,13 +8,15 @@ namespace jd
     {
         float m_elapsed;
         jop::Renderer& m_rend;
+        bool m_spawning;
 
     public:
 
         Spawner(jop::Object& obj, jop::Renderer& rend)
             : jop::Component(obj, 0),
               m_elapsed(0.f),
-              m_rend(rend)
+              m_rend(rend),
+              m_spawning(false)
         {
             using namespace jop;
             using RM = ResourceManager;
@@ -50,7 +52,7 @@ namespace jd
         {
             getObject()->rotate(0.f, deltaTime * 0.4f, 0.f);
 
-            if ((m_elapsed += deltaTime) > 0.1f)
+            if (m_spawning && (m_elapsed += deltaTime) > 0.25f)
             {
                 jop::Randomizer r;
 
@@ -72,7 +74,29 @@ namespace jd
                 newObj->createComponent<jop::RigidBody>(getObject()->getScene().getWorld(), info);
 
                 m_elapsed = 0.f;
+
+                struct Deleter : public jop::Component
+                {
+                    Deleter(jop::Object& obj)
+                        : jop::Component(obj, 0)
+                    {}
+
+                    void update(const float)
+                    {
+                        auto& pos = getObject()->getGlobalPosition();
+
+                        if (std::abs(pos.x) > 25.f || std::abs(pos.z) > 25.f)
+                            getObject()->removeSelf();
+                    }
+                };
+
+                newObj->createComponent<Deleter>();
             }
+        }
+
+        void toggleSpawning()
+        {
+            m_spawning = !m_spawning;
         }
     };
 }

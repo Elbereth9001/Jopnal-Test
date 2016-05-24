@@ -2,6 +2,7 @@
 #include "EventHandler.hpp"
 #include "Spawner.hpp"
 #include "MirrorBall.hpp"
+#include "LightBall.hpp"
 
 
 namespace jd
@@ -49,7 +50,7 @@ namespace jd
             using RM = ResourceManager;
             using MA = Material::Attribute;
 
-            //getWorld().setDebugMode(true);
+            Clock c;
 
             // Lights
             {
@@ -84,20 +85,27 @@ namespace jd
                 createChild("mirror")->setPosition(0.f, 4.f, 0.f).createComponent<MirrorBall>(getRenderer());
             }
 
+            // Light ball
+            {
+                createChild("lball")->setPosition(0.f, 15.f, 0.f).createComponent<LightBall>(getRenderer());
+            }
+
             // Ground
             {
                 auto& mat = RM::getEmptyResource<Material>("groundmat", MA::DefaultLighting | MA::DiffuseMap)
                     .setReflection(Material::Reflection::Ambient, Color(0x666666FF))
                     .setReflection(Material::Reflection::Specular, Color::Black);
 
-                createChild("ground")->rotate(-glm::half_pi<float>(), 0.f, 0.f).createComponent<GenericDrawable>(getRenderer())
+                createChild("ground")->createComponent<GenericDrawable>(getRenderer())
                     .setCastShadows(false)
                     .setModel(Model(RM::getNamedResource<RectangleMesh>("groundmesh", 50.f), mat));
 
-                RigidBody::ConstructInfo info(RM::getNamedResource<InfinitePlaneShape>("groundshape", glm::vec3(0.f, 0.f, 1.f)));
+                RigidBody::ConstructInfo info(RM::getNamedResource<InfinitePlaneShape>("groundshape"));
                 info.restitution = 1.f;
 
-                findChild("ground")->createComponent<RigidBody>(getWorld(), info);
+                findChild("ground")->createComponent<RigidBody>(getWorld(), info).
+
+                    getObject()->rotate(-glm::half_pi<float>(), 0.f, 0.f);
             }
 
             // Camera & audio listener
@@ -115,6 +123,8 @@ namespace jd
                 createChild("sky")->createComponent<SkySphere>(getRenderer())
                     .setMap(map).getModel();
             }
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(5000 - c.getElapsedTime().asMilliseconds()));
             
             Engine::getSubsystem<Window>()->setEventHandler<EventHandler>();
         }
@@ -136,6 +146,8 @@ namespace jd
                     findChild("spawn")->setActive(true);
                     findChild("mirror")->findChild("ball")->getComponent<jop::GenericDrawable>()
                         ->getModel().getMaterial()->setReflection(jop::Material::Reflection::Specular, jop::Color::White);
+
+                    findChild("lball")->setActive(true);
                 }
 
                 if (!obj->getComponent<WaveTranslator>() && obj->move(0.f, speed * dt, 0.f).getGlobalPosition().y > 7.f)

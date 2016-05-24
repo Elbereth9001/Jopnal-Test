@@ -49,7 +49,7 @@ namespace jd
 
                     .setFont(RM::getResource<jop::Font>("Furore.otf", 64))
                     .setString("please stand by")
-                    .setColor(jop::Color(0.05f, 0.05f, 1.f));
+                    .setColor(jop::Color(0x1C8EFFFF));
             }
 
             // Audio

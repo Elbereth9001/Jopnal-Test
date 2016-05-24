@@ -1,5 +1,6 @@
 #pragma once
-#include <Jopnal/Jopnal.hpp>
+#include "Spawner.hpp"
+#include "LightBall.hpp"
 
 
 namespace jd
@@ -25,13 +26,32 @@ namespace jd
             if (key == Keyboard::Escape)
                 closed();
 
-            else if (Engine::hasCurrentScene() && key == Keyboard::T)
-                Engine::getCurrentScene().printDebugTree();
+            if (Engine::hasCurrentScene())
+            {
+                auto& scene = Engine::getCurrentScene();
 
-            else if (key == Keyboard::Key::P)
+                if (key == Keyboard::T)
+                    scene.printDebugTree();
+
+                if (key == Keyboard::O)
+                {
+                    auto spawn = scene.findChild("spawn");
+                    if (!spawn.expired())
+                        spawn->getComponent<Spawner>()->toggleSpawning();
+                }
+
+                if (key == Keyboard::I)
+                {
+                    auto spawn = scene.findChild("lball");
+                    if (!spawn.expired())
+                        spawn->getComponent<LightBall>()->toggleSpawning();
+                }
+            }
+
+            if (key == Keyboard::Key::P)
                 Engine::setState(Engine::getState() == Engine::State::Running ? Engine::State::RenderOnly : Engine::State::Running);
 
-            else if ((mods & Keyboard::Modifier::Control) != 0 && key == Keyboard::S)
+            if ((mods & Keyboard::Modifier::Control) != 0 && key == Keyboard::S)
             {
                 jop::SettingManager::save();
             }
