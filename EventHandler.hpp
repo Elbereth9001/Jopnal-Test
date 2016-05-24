@@ -46,6 +46,13 @@ namespace jd
                     if (!spawn.expired())
                         spawn->getComponent<LightBall>()->toggleSpawning();
                 }
+
+                if (key == Keyboard::M)
+                {
+                    auto mus = Engine::getCurrentScene().getComponent<jop::SoundStream>();
+
+                    mus->getStatus() == jop::SoundSource::Status::Paused ? mus->play(false) : mus->pause();
+                }
             }
 
             if (key == Keyboard::Key::P)

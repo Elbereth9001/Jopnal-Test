@@ -63,10 +63,12 @@ namespace jd
                 auto d = i.getComponent<GenericDrawable>();
                 d->setAlphaMultiplier(std::min(d->getAlphaMultiplier() + deltaTime * 0.25f, 1.f));
 
-                i.move(glm::normalize(getObject()->getGlobalPosition() - i.getGlobalPosition()) * 1.f * deltaTime * 
-                       (25.f / glm::distance(getObject()->getGlobalPosition(), i.getGlobalPosition()) * 2.f));
+                auto dist = glm::distance(getObject()->getGlobalPosition(), i.getGlobalPosition());
 
-                if (glm::distance(getObject()->getGlobalPosition(), i.getGlobalPosition()) < 0.25f * getObject()->getLocalScale().x)
+                i.move(glm::min(glm::normalize(getObject()->getGlobalPosition() - i.getGlobalPosition()) * 1.f * deltaTime * 
+                       (25.f / dist * 2.f), dist));
+
+                if (glm::distance(getObject()->getGlobalPosition(), i.getGlobalPosition()) < 0.5f * getObject()->getLocalScale().x)
                 {
                     i.removeSelf();
                     getObject()->scale(1.5f);
@@ -75,7 +77,7 @@ namespace jd
             }
 
             const float scaleOffset = std::max(0.f, getObject()->getLocalScale().x - 1.f);
-            getObject()->setScale(std::min(3.f, 1.f + (scaleOffset - (0.5f * scaleOffset) * deltaTime * 2.f)));
+            getObject()->setScale(std::min(4.f, 1.f + (scaleOffset - (0.5f * scaleOffset) * deltaTime * 2.f)));
 
             getObject()->getComponent<LightSource>()->setAttenuation(50.f * scaleOffset);
         }

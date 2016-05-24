@@ -31,7 +31,7 @@ namespace jd
         {
             m_sine += deltaTime;
 
-            getObject()->move(0.f, std::sin(m_sine) * m_scale * deltaTime, 0.f);
+            getObject()->move(std::sin(m_sine) * deltaTime * 1.2f, std::sin(m_sine) * m_scale * deltaTime, std::cos(m_sine) * deltaTime * 1.2f);
         }
     };
 
@@ -179,7 +179,7 @@ namespace jd
 
             if (!cam.expired())
             {
-                const float speed = 4.f;
+                const float speed = 4.f + 6.f * h.keyDown(Keyboard::LControl);
 
                 if (h.keyDown(Keyboard::A) || h.keyDown(Keyboard::D))
                     cam->move((h.keyDown(Keyboard::D) ? 1.f : -1.f) * dt * speed * cam->getGlobalRight());
