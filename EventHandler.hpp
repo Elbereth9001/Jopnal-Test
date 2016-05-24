@@ -53,6 +53,19 @@ namespace jd
 
                     mus->getStatus() == jop::SoundSource::Status::Paused ? mus->play(false) : mus->pause();
                 }
+
+                if (key == Keyboard::R)
+                    scene.setDeltaScale(1.f);
+
+                if (key == Keyboard::Up)
+                    scene.setDeltaScale(scene.getDeltaScale() < 0.2f ? scene.getDeltaScale() * 2.f : scene.getDeltaScale() + 0.2f);
+
+                if (key == Keyboard::Down)
+                    scene.setDeltaScale(std::max(scene.getDeltaScale() < 0.21f ? scene.getDeltaScale() * 0.5f : scene.getDeltaScale() - 0.2f, 0.01f));
+
+                auto mus = scene.getComponent<jop::SoundStream>();
+                if (mus)
+                    mus->setPitch(std::min((1.f + scene.getDeltaScale()) / 2.f, 5.f));
             }
 
             if (key == Keyboard::Key::P)
@@ -83,6 +96,14 @@ namespace jd
 
                 cam->setRotation(glm::radians(-totals.y), glm::radians(-totals.x), 0.f);
             }
+        }
+
+        void controllerAxisShifted(const int, const int axisIndex, const float shift)
+        {
+            const float mult = 15.f;
+
+            mouseMoved((axisIndex == jop::Controller::Playstation::Axis::RightStickX) * shift * mult,
+                       (axisIndex == jop::Controller::Playstation::Axis::RightStickY) * shift * mult);
         }
     };
 }

@@ -27,7 +27,7 @@ namespace jd
 
             auto root = getObject();
 
-            m_mat.setReflection(Material::Reflection::Solid, Color::Green * 2.f);
+            m_mat.setReflection(Material::Reflection::Solid, Color::Green * 5.f);
 
             root->createComponent<GenericDrawable>(rend).setModel(Model(m_mesh, m_mat));
 
@@ -46,6 +46,34 @@ namespace jd
         void update(const float deltaTime) override
         {
             using namespace jop;
+
+            if (Engine::getCurrentScene().getDeltaScale() >= 10.f)
+            {
+                static float elapse = 0.f;
+                static unsigned int currIndex = 1;
+                elapse += deltaTime;
+
+                if (elapse > 20.f)
+                {
+                    if (++currIndex > 2)
+                        currIndex = 0;
+
+                    Color col(Color::Black);
+                    col.colors[currIndex] = 1.f;
+                    col *= 5.f;
+
+                    m_mat.setReflection(Material::Reflection::Solid, col);
+
+                    getObject()->getComponent<LightSource>()->setIntensity(Color::Black, col * 0.2f, col * 0.2f);
+
+                    elapse -= 20.f;
+                }
+            }
+            else
+            {
+                m_mat.setReflection(Material::Reflection::Solid, Color::Green * 2.f);
+                getObject()->getComponent<LightSource>()->setIntensity(Color::Black, Color::Green, Color::Green);
+            }
 
             if (m_spawning && (m_elapsed += deltaTime) > 1.f)
             {
