@@ -50,8 +50,6 @@ namespace jd
             using RM = ResourceManager;
             using MA = Material::Attribute;
 
-            Clock c;
-
             // Lights
             {
                 using LS = LightSource;
@@ -123,8 +121,6 @@ namespace jd
                 createChild("sky")->createComponent<SkySphere>(getRenderer())
                     .setMap(map).getModel();
             }
-
-            std::this_thread::sleep_for(std::chrono::milliseconds(5000 - c.getElapsedTime().asMilliseconds()));
             
             Engine::getSubsystem<Window>()->setEventHandler<EventHandler>();
         }
