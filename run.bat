@@ -1,0 +1,1 @@
+call adb -d shell am start -debug -a android.intent.action.MAIN -n net.example.jopnal/android.app.NativeActivity

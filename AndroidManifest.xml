@@ -16,14 +16,15 @@
     <application android:label="@string/app_name"
                  android:icon="@drawable/jopnal"
                  android:hasCode="false"
-                 android:allowBackup="true">
+                 android:allowBackup="true"
+                 android:debuggable="true">
 
     <activity android:name="android.app.NativeActivity"
               android:label="@string/app_name"
               android:icon="@drawable/jopnal"
               android:configChanges="orientation|screenSize">
 
-        <meta-data android:name="android.app.lib_name" android:value="jopnal-activity" />
+        <meta-data android:name="android.app.lib_name" android:value="jopnal-activityd" />
         <meta-data android:name="jopnal.app.lib_name" android:value="jopnal-example" />
 
         <intent-filter>

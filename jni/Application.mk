@@ -3,4 +3,5 @@ APP_PLATFORM := android-18
 APP_STL := c++_shared
 APP_ABI := armeabi-v7a
 APP_CPPFLAGS += -frtti
-APP_MODULES := jopnal-activity jopnal-example
+APP_OPTIM := debug
+APP_MODULES := jopnal-activityd jopnal-example
