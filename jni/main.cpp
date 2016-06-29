@@ -8,7 +8,7 @@ int main(int c, char* v[])
     jop::Engine::getSubsystem<jop::Window>()->setMouseMode(jop::Mouse::Mode::Frozen);
 
     jop::Engine::createScene<jd::LoadingScene>();
-    jop::Engine::createScene<jd::DemoScene, true, true>();
+    //jop::Engine::createScene<jd::DemoScene, true, true>();
 
     return JOP_MAIN_LOOP;
 }
