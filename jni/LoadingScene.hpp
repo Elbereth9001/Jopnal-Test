@@ -45,9 +45,9 @@ namespace jd
 
             // Text
             {
-                createChild("text")->move(0.f, 0.f, 0.f).setScale(8.f).createComponent<jop::Text>(getRenderer())
+                createChild("text")->move(0.f, 0.f, 0.f).setScale(0.005f).createComponent<jop::Text>(getRenderer())
 
-                    .setFont(RM::getResource<jop::Font>("Furore.otf", 64))
+                    .setFont(RM::getResource<jop::Font>("Furore.ttf", 64))
                     .setString("please stand by")
                     .setColor(jop::Color(0x1C8EFFFF));
             }
