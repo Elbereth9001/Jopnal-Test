@@ -53,6 +53,11 @@ public:
         // Rotate our object by its X and Y axes. Don't forget to multiply by the delta time.
         m_object->rotate(0.5f * deltaTime, 1.f * deltaTime, 0.f);
     }
+
+    void postUpdate(const float deltaTime)
+    {
+        jop::Engine::exit();
+    }
 };
 
 // Standard main() can be used, as long as jopnal-main.lib has been linked.
