@@ -17,14 +17,13 @@ namespace jd
             // Camera
             {
                 auto& camComponent = createChild("cam")->createComponent<jop::Camera>(getRenderer(), jop::Camera::Projection::Orthographic);
-                camComponent.setSize(camComponent.getSize() * 0.005f);
             }
 
             // Logo
             {
-                createChild("logo")->move(-2.f, 0.f, 0.f).createComponent<jop::GenericDrawable>(getRenderer()).getModel()
+                createChild("logo")->move(-0.5f, 0.f, 0.f).createComponent<jop::GenericDrawable>(getRenderer()).getModel()
 
-                    .setMesh(RM::getNamedResource<jop::RectangleMesh>("logoMesh", 2.f))
+                    .setMesh(RM::getNamedResource<jop::RectangleMesh>("logoMesh", 0.5f))
                     .setMaterial(RM::getEmptyResource<jop::Material>("logoMat", MAT::DefaultLighting)
                     .setMap(jop::Material::Map::Diffuse, RM::getResource<jop::Texture2D>("jop.png", true, true))
                     .setReflection(jop::Color(0x222222FF), jop::Color::White, jop::Color::Black, jop::Color::Black));
@@ -45,9 +44,9 @@ namespace jd
 
             // Text
             {
-                createChild("text")->move(0.f, 0.f, 0.f).setScale(8.f).createComponent<jop::Text>(getRenderer())
+                createChild("text")->move(0.f, 0.f, 0.f).setScale(0.001f).createComponent<jop::Text>(getRenderer())
 
-                    .setFont(RM::getResource<jop::Font>("Furore.otf", 64))
+                    .setFont(RM::getResource<jop::Font>("Furore.ttf", 64))
                     .setString("please stand by")
                     .setColor(jop::Color(0x1C8EFFFF));
             }
