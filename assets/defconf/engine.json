@@ -1,0 +1,90 @@
+{
+    "Settings": {
+        "bAutoUpdate": false
+    },
+    "Debug": {
+        "Console": {
+            "bEnabled": true,
+            "uVerbosity": 3,
+            "bReduceSpam": true,
+            "bLogToFile": true,
+            "bDebuggerOutput": true
+        },
+        "bPrintShaderUniformLocationErrors": true,
+        "bValidateShaders": false
+    },
+    "Filesystem": {
+        "bErrorChecks": true
+    },
+    "DefaultWindow": {
+        "sTitle": "MyProject",
+        "uMode": 0,
+        "uMultisampling": 0,
+        "uFrameLimit": 0,
+        "bVisible": true,
+        "bVerticalSync": true,
+        "bDebugContext": false,
+        "sClearColor": "000000FF"
+    },
+    "Graphics": {
+        "OpenGL": {
+            "uVersionMajor": 3,
+            "uVersionMinor": 3
+        },
+        "MainRenderTarget": {
+            "fResolutionScale": 1.0,
+            "bUseWindow": true
+        },
+        "Texture": {
+            "uDefaultFilterMode": 0,
+            "uDefaultRepeatMode": 0,
+            "fDefaultAnisotropyLevel": 16.0,
+            "fDefaultBorderColor": "FFFFFFFF"
+        },
+        "Postprocessor": {
+            "Tonemapping": {
+                "bEnabled": true,
+                "fExposure": 1.0
+            },
+            "Bloom": {
+                "bEnabled": true,
+                "uBlurPasses": 10
+            },
+            "bEnable": false
+        },
+        "Shading": {
+            "Material": {
+                "sDefaultAmbient": "000000FF",
+                "sDefaultDiffuse": "FFFFFFFF",
+                "sDefaultSpecular": "000000FF",
+                "sDefaultEmission": "000000FF"
+            },
+            "uMaxPointLights": 8,
+            "uMaxDirectionalLights": 2,
+            "uMaxSpotLights": 2,
+            "Light": {
+                "sDefaultAmbient": "000000FF",
+                "sDefaultDiffuse": "FFFFFFFF",
+                "sDefaultSpecular": "FFFFFFFF"
+            }
+        },
+        "DefaultPerspectiveCamera": {
+            "fClipFar": 9999999.0,
+            "fClipNear": 1.0,
+            "fFovYRad": 0.9599310755729676
+        }
+    },
+    "Physics": {
+        "DefaultWorld": {
+            "fGravity": -9.8100004196167
+        },
+        "uUpdateFrequency": 50
+    },
+    "bForceProcessHighPriority": true,
+    "Input": {
+        "Controller": {
+            "uMaxControllers": 1,
+            "fDeadzone": 0.10000000149011612
+        }
+    }
+}

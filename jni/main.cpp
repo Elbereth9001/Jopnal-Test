@@ -1,27 +1,28 @@
-//#include "DemoScene.hpp"
-//#include "LoadingScene.hpp"
-//
-//int main(int c, char* v[])
-//{
-//    JOP_ENGINE_INIT("JopTestProject", c, v);
-//    
-//    jop::Engine::getSubsystem<jop::Window>()->setMouseMode(jop::Mouse::Mode::Frozen);
-//
-//    jop::Engine::createScene<jd::LoadingScene>();
-//    jop::Engine::createScene<jd::DemoScene, true, true>();
-//
-//    return JOP_MAIN_LOOP;
-//}
+#if 1
 
-// Jopnal.hpp contains all engine functionality.
+#include "DemoScene.hpp"
+#include "LoadingScene.hpp"
+
+int main(int c, char* v[])
+{
+    JOP_ENGINE_INIT("JopTestProject", c, v);
+    
+    jop::Engine::getSubsystem<jop::Window>()->setMouseMode(jop::Mouse::Mode::Frozen);
+
+    jop::Engine::createScene<jd::LoadingScene>();
+    jop::Engine::createScene<jd::DemoScene, true, true>();
+
+    return JOP_MAIN_LOOP;
+}
+
+#else
+
 #include <Jopnal/Jopnal.hpp>
 
-// Let's define our own scene.
 class MyScene : public jop::Scene
 {
 private:
 
-    // Reference to out box object. This will be filled in the constructor.
     jop::WeakReference<jop::Object> m_object;
 
 public:
@@ -30,45 +31,47 @@ public:
         : jop::Scene("MyScene"),
         m_object()
     {
-        // Create a camera object. If you don't do this, nothing will be drawn. The camera
-        // will, by default, be positioned at [0,0,0] and it'll point directly at [0,0,-1].
         createChild("cam")->createComponent<jop::Camera>(getRenderer(), jop::Camera::Projection::Perspective);
 
-        // Let's create our box object and store its reference
         m_object = createChild("box");
-
-        // Create a GenericDrawable component. This will actually add the functionality for drawing the box.
-        // We don't need to do anything else here, as the default mesh, material and shader will be used
-        // automatically.
         m_object->createComponent<jop::GenericDrawable>(getRenderer());
-
-        // Move the object further away from the camera, so that it won't be clipped by the near clipping
-        // plane.
         m_object->setPosition(0.f, 0.f, -2.5f);
+
+
+        // Create an object with a directional light component
+        auto light = createChild("light");
+        light->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Directional);
+
+        // Move the light to the right and set it to point to the left
+        // Notice that the rotation is expected to be in radians
+        light->setPosition(5.f, 0.f, 0.f).setRotation(0.f, glm::radians(90.f), 0.f);
+
+        auto drawable = m_object->getComponent<jop::GenericDrawable>();
+
+        // To modify the drawable's material, we must create a new one to replace the default
+        auto& newMaterial = jop::ResourceManager::getEmptyResource<jop::Material>("newMaterial");
+        drawable->getModel().setMaterial(newMaterial);
+
+        // Set the diffuse reflection. This will automatically enable lighting
+        newMaterial.setReflection(jop::Material::Reflection::Diffuse, jop::Color::White);
     }
 
-    // Pre-update will be called before objects are updated
     void preUpdate(const float deltaTime) override
     {
-        // Rotate our object by its X and Y axes. Don't forget to multiply by the delta time.
         m_object->rotate(0.5f * deltaTime, 1.f * deltaTime, 0.f);
-    }
-
-    void postUpdate(const float deltaTime)
-    {
-        jop::Engine::exit();
     }
 };
 
-// Standard main() can be used, as long as jopnal-main.lib has been linked.
 int main(int argc, char* argv[])
 {
-    // Initialize the engine
+    jop::SettingManager::setDefaultDirectory("defconf");
+    jop::SettingManager::setOverrideWithDefaults();
+
     JOP_ENGINE_INIT("MyProject", argc, argv);
 
-    // Create our scene
     jop::Engine::createScene<MyScene>();
 
-    // Finally run the main loop. The program can be closed by clicking the window red X button.
     return JOP_MAIN_LOOP;
 }
+
+#endif
