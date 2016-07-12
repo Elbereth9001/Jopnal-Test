@@ -6,8 +6,8 @@
         "Console": {
             "bEnabled": true,
             "uVerbosity": 3,
-            "bReduceSpam": true,
-            "bLogToFile": true,
+            "bReduceSpam": false,
+            "bLogToFile": false,
             "bDebuggerOutput": true
         },
         "bPrintShaderUniformLocationErrors": true,
