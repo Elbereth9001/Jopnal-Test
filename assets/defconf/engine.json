@@ -1,13 +1,13 @@
 {
     "Settings": {
-        "bAutoUpdate": false
+        "bAutoUpdate": true
     },
     "Debug": {
         "Console": {
             "bEnabled": true,
             "uVerbosity": 3,
-            "bReduceSpam": false,
-            "bLogToFile": false,
+            "bReduceSpam": true,
+            "bLogToFile": true,
             "bDebuggerOutput": true
         },
         "bPrintShaderUniformLocationErrors": true,
@@ -17,7 +17,9 @@
         "bErrorChecks": true
     },
     "DefaultWindow": {
-        "sTitle": "MyProject",
+        "uSizeX": 1600,
+        "uSizeY": 900,
+        "sTitle": "JopTestProject",
         "uMode": 0,
         "uMultisampling": 0,
         "uFrameLimit": 0,
@@ -29,28 +31,31 @@
     "Graphics": {
         "OpenGL": {
             "uVersionMajor": 3,
-            "uVersionMinor": 3
+            "uVersionMinor": 0
         },
         "MainRenderTarget": {
             "fResolutionScale": 1.0,
-            "bUseWindow": true
+            "bHDR": false,
+            "sClearColor": "000000FF"
         },
         "Texture": {
-            "uDefaultFilterMode": 0,
+            "uDefaultFilterMode": 1,
             "uDefaultRepeatMode": 0,
             "fDefaultAnisotropyLevel": 16.0,
             "fDefaultBorderColor": "FFFFFFFF"
         },
         "Postprocessor": {
             "Tonemapping": {
-                "bEnabled": true,
+                "bEnabled": false,
                 "fExposure": 1.0
             },
-            "Bloom": {
-                "bEnabled": true,
-                "uBlurPasses": 10
+            "GammaCorrection": {
+                "bEnabled": false,
+                "fGamma": 2.200000047683716
             },
-            "bEnable": false
+            "Dithering": {
+                "bEnabled": true
+            }
         },
         "Shading": {
             "Material": {
@@ -66,7 +71,18 @@
                 "sDefaultAmbient": "000000FF",
                 "sDefaultDiffuse": "FFFFFFFF",
                 "sDefaultSpecular": "FFFFFFFF"
-            }
+            },
+            "fLightCullThreshold": 0.0010000000474974514,
+            "uShadowMapResolution": 512,
+            "uEnvironmentMapSize": 128,
+            "fEnvironmentRecordFarPlane": 1000.0
+        },
+        "DefaultOrthographicCamera": {
+            "fClipFar": 1.0,
+            "fClipNear": -1.0
+        },
+        "Font": {
+            "uTextureInitialSize": 256
         },
         "DefaultPerspectiveCamera": {
             "fClipFar": 9999999.0,

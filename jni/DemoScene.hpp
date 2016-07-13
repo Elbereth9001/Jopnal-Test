@@ -67,10 +67,10 @@ namespace jd
                                     RM::getEmptyResource<Material>("spotbulbmat", false)
                                     .setReflection(Material::Reflection::Solid, Color::White * 10.f)));
 
-                auto& stream = findChild("pointlight1")->createComponent<SoundStream>();
-                stream.setPath("pulse.wav");
-                stream.setLoop(true).setSpatialized(true).setAttenuation(3.5f).setVolume(0.f).setMinDistance(5.f);
-                stream.play();
+                //auto& stream = findChild("pointlight1")->createComponent<SoundStream>();
+                //stream.setPath("pulse.wav");
+                //stream.setLoop(true).setSpatialization(true).setAttenuation(3.5f).setVolume(0.f).setMinDistance(5.f);
+                //stream.play();
             }
 
             // Spinning spawner
@@ -101,7 +101,7 @@ namespace jd
                 RigidBody::ConstructInfo info(RM::getNamedResource<InfinitePlaneShape>("groundshape"));
                 info.restitution = 1.f;
 
-                findChild("ground")->createComponent<RigidBody>(getWorld(), info).
+                findChild("ground")->createComponent<RigidBody>(getWorld<3>(), info).
 
                     getObject()->rotate(-glm::half_pi<float>(), 0.f, 0.f);
             }
@@ -110,7 +110,7 @@ namespace jd
             {
                 createChild("cam")->setPosition(0.f, 2.5f, 24.f)
                     .createComponent<Camera>(getRenderer(), Camera::Projection::Perspective)
-                    .getObject()->createComponent<Listener>();
+                    /*.getObject()->createComponent<Listener>()*/;
             }
 
             // Sky sphere
@@ -150,19 +150,19 @@ namespace jd
                 {
                     obj->createComponent<WaveTranslator>(3.5f);
 
-                    auto& stream = createComponent<jop::SoundStream>();
-                    stream.setID(1);
-                    stream.setPath("music.ogg");
-                    stream.setLoop(true).setVolume(0.f);
-                    stream.play();
-                    stream.setOffset(62.f);
+                    //auto& stream = createComponent<jop::SoundStream>();
+                    //stream.setID(1);
+                    //stream.setOffset(62.f);
+                    //stream.setPath("music.wav");
+                    //stream.setLoop(true).setVolume(0.f);
+                    //stream.play();
                 }
 
-                auto streamComp = getComponent<jop::SoundStream>(1);
-                if (streamComp)
-                    streamComp->setVolume(std::min(7.5f, streamComp->getVolume() + dt * 1.f));
+                //auto streamComp = getComponent<jop::SoundStream>(1);
+                //if (streamComp)
+                //    streamComp->setVolume(std::min(7.5f, streamComp->getVolume() + dt * 1.f));
 
-                obj->getComponent<jop::SoundStream>()->setVolume(obj->getGlobalPosition().y * 10.f);
+                //obj->getComponent<jop::SoundStream>()->setVolume(obj->getGlobalPosition().y * 10.f);
             }
         }
 

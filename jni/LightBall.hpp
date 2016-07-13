@@ -35,7 +35,7 @@ namespace jd
 
             m_sound = &root->createComponent<SoundEffect>();
             m_sound->setBuffer(ResourceManager::getResource<SoundBuffer>("flash.ogg"))
-                .setSpatialized(true)
+                .setSpatialization(true)
                 .setAttenuation(0.8f)
                 .setVolume(100.f)
                 .setMinDistance(2.5f);
@@ -100,7 +100,7 @@ namespace jd
                 {
                     i.removeSelf();
                     getObject()->scale(1.5f);
-                    m_sound->play(true);
+                    m_sound->playReset();
                 }
             }
 

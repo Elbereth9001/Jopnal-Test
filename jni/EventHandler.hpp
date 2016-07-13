@@ -51,7 +51,7 @@ namespace jd
                 {
                     auto mus = Engine::getCurrentScene().getComponent<jop::SoundStream>();
 
-                    mus->getStatus() == jop::SoundSource::Status::Paused ? mus->play(false) : mus->pause();
+                    mus->getStatus() == jop::SoundSource::Status::Paused ? mus->play() : mus->pause();
                 }
 
                 if (key == Keyboard::R)

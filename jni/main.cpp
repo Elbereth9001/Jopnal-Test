@@ -64,8 +64,10 @@ public:
 
 int main(int argc, char* argv[])
 {
+#ifdef JOP_OS_ANDROID
     jop::SettingManager::setDefaultDirectory("defconf");
     jop::SettingManager::setOverrideWithDefaults();
+#endif
 
     JOP_ENGINE_INIT("MyProject", argc, argv);
 

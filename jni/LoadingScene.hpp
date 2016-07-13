@@ -53,9 +53,9 @@ namespace jd
 
             // Audio
             {
-                auto& stream = createComponent<jop::SoundStream>();
-                stream.setPath("pulse2.wav");
-                stream.setLoop(true).play().setPitch(0.82f);
+                //auto& stream = createComponent<jop::SoundStream>();
+                //stream.setPath("pulse2.wav");
+                //stream.setLoop(true).play().setPitch(0.82f);
             }
         }
 
@@ -76,7 +76,7 @@ namespace jd
 
                 const jop::Color newColor(text->getColor().colors, text->getColor().alpha - deltaTime * 1.25f);
 
-                getComponent<jop::SoundStream>()->setVolume(100.f * text->getColor().alpha);
+                //getComponent<jop::SoundStream>()->setVolume(100.f * text->getColor().alpha);
 
                 if (newColor.alpha <= 0.f)
                 {

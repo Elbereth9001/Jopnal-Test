@@ -71,7 +71,7 @@ namespace jd
 
                 jop::RigidBody::ConstructInfo info(jop::ResourceManager::getNamedResource<jop::SphereShape>("asdfshape", 0.35f * newObj->getLocalScale().x), jop::RigidBody::Type::Dynamic, 1.f);
                 info.restitution = 1.f;
-                newObj->createComponent<jop::RigidBody>(getObject()->getScene().getWorld(), info);
+                newObj->createComponent<jop::RigidBody>(getObject()->getScene().getWorld<3>(), info);
 
                 m_elapsed = 0.f;
 
