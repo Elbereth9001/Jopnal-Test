@@ -19,7 +19,7 @@
     "DefaultWindow": {
         "uSizeX": 1600,
         "uSizeY": 900,
-        "sTitle": "JopTestProject",
+        "sTitle": "MyProject",
         "uMode": 0,
         "uMultisampling": 0,
         "uFrameLimit": 0,
@@ -31,15 +31,16 @@
     "Graphics": {
         "OpenGL": {
             "uVersionMajor": 3,
-            "uVersionMinor": 0
+            "uVersionMinor": 3
         },
         "MainRenderTarget": {
             "fResolutionScale": 1.0,
-            "bHDR": false,
-            "sClearColor": "000000FF"
+            "bUseWindow": false,
+            "sClearColor": "000000FF",
+            "bHDR": false
         },
         "Texture": {
-            "uDefaultFilterMode": 1,
+            "uDefaultFilterMode": 0,
             "uDefaultRepeatMode": 0,
             "fDefaultAnisotropyLevel": 16.0,
             "fDefaultBorderColor": "FFFFFFFF"
@@ -48,6 +49,11 @@
             "Tonemapping": {
                 "bEnabled": false,
                 "fExposure": 1.0
+            },
+            "Bloom": {
+                "bEnabled": true,
+                "uKernelSize": 5,
+                "fThreshold": 0.9
             },
             "GammaCorrection": {
                 "bEnabled": false,
@@ -71,11 +77,12 @@
                 "sDefaultAmbient": "000000FF",
                 "sDefaultDiffuse": "FFFFFFFF",
                 "sDefaultSpecular": "FFFFFFFF"
-            },
-            "fLightCullThreshold": 0.0010000000474974514,
-            "uShadowMapResolution": 512,
-            "uEnvironmentMapSize": 128,
-            "fEnvironmentRecordFarPlane": 1000.0
+            }
+        },
+        "DefaultPerspectiveCamera": {
+            "fClipFar": 9999999.0,
+            "fClipNear": 1.0,
+            "fFovYRad": 0.9599310755729676
         },
         "DefaultOrthographicCamera": {
             "fClipFar": 1.0,
@@ -83,11 +90,6 @@
         },
         "Font": {
             "uTextureInitialSize": 256
-        },
-        "DefaultPerspectiveCamera": {
-            "fClipFar": 9999999.0,
-            "fClipNear": 1.0,
-            "fFovYRad": 0.9599310755729676
         }
     },
     "Physics": {

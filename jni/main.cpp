@@ -1,4 +1,4 @@
-#if 0
+#if 1
 
 #include "DemoScene.hpp"
 #include "LoadingScene.hpp"
@@ -53,7 +53,7 @@ public:
         drawable->getModel().setMaterial(newMaterial);
 
         // Set the diffuse reflection. This will automatically enable lighting
-        newMaterial.setReflection(jop::Material::Reflection::Diffuse, jop::Color::White);
+        newMaterial.setReflection(jop::Material::Reflection::Solid, jop::Color::White);
     }
 
     void preUpdate(const float deltaTime) override
