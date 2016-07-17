@@ -16,7 +16,7 @@ namespace jd
 
             // Camera
             {
-                auto& camComponent = createChild("cam")->createComponent<jop::Camera>(getRenderer(), jop::Camera::Projection::Orthographic);
+                createChild("cam")->createComponent<jop::Camera>(getRenderer(), jop::Camera::Projection::Orthographic);
             }
 
             // Logo
