@@ -23,8 +23,8 @@ namespace jd
             {
                 createChild("logo")->move(-0.5f, 0.f, 0.f).createComponent<jop::GenericDrawable>(getRenderer()).getModel()
 
-                    .setMesh(RM::getNamedResource<jop::RectangleMesh>("logoMesh", 0.5f))
-                    .setMaterial(RM::getEmptyResource<jop::Material>("logoMat", MAT::DefaultLighting)
+                    .setMesh(RM::getNamed<jop::RectangleMesh>("logoMesh", 0.5f))
+                    .setMaterial(RM::getEmpty<jop::Material>("logoMat", MAT::DefaultLighting)
                     .setMap(jop::Material::Map::Diffuse, RM::getResource<jop::Texture2D>("jop.png", true, true))
                     .setReflection(jop::Color(0x222222FF), jop::Color::White, jop::Color::Black, jop::Color::Black));
             }
@@ -85,7 +85,7 @@ namespace jd
                 }
                 
                 text->setColor(newColor);
-                auto& mat = jop::ResourceManager::getExistingResource<jop::Material>("logoMat");
+                auto& mat = jop::ResourceManager::getExisting<jop::Material>("logoMat");
                 mat.setReflection(jop::Material::Reflection::Diffuse, jop::Color(mat.getReflection(jop::Material::Reflection::Diffuse).colors, newColor.alpha));
             }
 

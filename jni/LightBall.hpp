@@ -17,8 +17,8 @@ namespace jd
 
         LightBall(jop::Object& obj, jop::Renderer& rend)
             : jop::Component(obj, 0),
-              m_mat(jop::ResourceManager::getEmptyResource<jop::Material>("lightballmat", jop::Material::Attribute::Alpha, false)),
-              m_mesh(jop::ResourceManager::getNamedResource<jop::SphereMesh>("lightballmesh", 0.5f, 25, 25)),
+              m_mat(jop::ResourceManager::getEmpty<jop::Material>("lightballmat", jop::Material::Attribute::Alpha, false)),
+              m_mesh(jop::ResourceManager::getNamed<jop::SphereMesh>("lightballmesh", 0.5f, 25, 25)),
               m_rend(rend),
               m_elapsed(0.f),
               m_spawning(false)

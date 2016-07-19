@@ -15,8 +15,8 @@ namespace jd
             using MA = Material::Attribute;
             using RM = ResourceManager;
 
-            auto& mat = RM::getEmptyResource<Material>("mirrballmat", MA::DefaultLighting | MA::EnvironmentMap);
-            auto& mesh = RM::getNamedResource<SphereMesh>("mirrorballmesh", 2.5f, 30, 30);
+            auto& mat = RM::getEmpty<Material>("mirrballmat", MA::DefaultLighting | MA::EnvironmentMap);
+            auto& mesh = RM::getNamed<SphereMesh>("mirrorballmesh", 2.5f, 30, 30);
 
             auto ballObj = getObject()->createChild("ball");
             ballObj->setPosition(10.f, 0.f, 0.f);

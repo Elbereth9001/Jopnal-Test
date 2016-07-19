@@ -63,8 +63,8 @@ namespace jd
                     .setCastShadows(true).
 
                 getObject()->createComponent<GenericDrawable>(getRenderer())
-                    .setModel(Model(RM::getNamedResource<SphereMesh>("spotbulb", 0.075f, 10, 10),
-                                    RM::getEmptyResource<Material>("spotbulbmat", false)
+                    .setModel(Model(RM::getNamed<SphereMesh>("spotbulb", 0.075f, 10, 10),
+                                    RM::getEmpty<Material>("spotbulbmat", false)
                                     .setReflection(Material::Reflection::Solid, Color::White * 10.f)));
 
                 //auto& stream = findChild("pointlight1")->createComponent<SoundStream>();
@@ -90,15 +90,15 @@ namespace jd
 
             // Ground
             {
-                auto& mat = RM::getEmptyResource<Material>("groundmat", MA::DefaultLighting | MA::DiffuseMap)
+                auto& mat = RM::getEmpty<Material>("groundmat", MA::DefaultLighting | MA::DiffuseMap)
                     .setReflection(Material::Reflection::Ambient, Color(0x666666FF))
                     .setReflection(Material::Reflection::Specular, Color::Black);
 
                 createChild("ground")->createComponent<GenericDrawable>(getRenderer())
                     .setCastShadows(false)
-                    .setModel(Model(RM::getNamedResource<RectangleMesh>("groundmesh", 50.f), mat));
+                    .setModel(Model(RM::getNamed<RectangleMesh>("groundmesh", 50.f), mat));
 
-                RigidBody::ConstructInfo info(RM::getNamedResource<InfinitePlaneShape>("groundshape"));
+                RigidBody::ConstructInfo info(RM::getNamed<InfinitePlaneShape>("groundshape"));
                 info.restitution = 1.f;
 
                 findChild("ground")->createComponent<RigidBody>(getWorld<3>(), info).

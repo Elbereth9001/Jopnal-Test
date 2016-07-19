@@ -1,4 +1,4 @@
-#if 1
+#if 0
 
 #include "DemoScene.hpp"
 #include "LoadingScene.hpp"
@@ -40,7 +40,7 @@ public:
 
         // Create an object with a directional light component
         auto light = createChild("light");
-        light->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Directional);
+        light->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Directional).setIntensity(jop::LightSource::Intensity::Diffuse, jop::Color::White * 5.f);
 
         // Move the light to the right and set it to point to the left
         // Notice that the rotation is expected to be in radians
@@ -49,11 +49,12 @@ public:
         auto drawable = m_object->getComponent<jop::GenericDrawable>();
 
         // To modify the drawable's material, we must create a new one to replace the default
-        auto& newMaterial = jop::ResourceManager::getEmptyResource<jop::Material>("newMaterial");
+        auto& newMaterial = jop::ResourceManager::getEmpty<jop::Material>("newMaterial");
         drawable->getModel().setMaterial(newMaterial);
 
         // Set the diffuse reflection. This will automatically enable lighting
-        newMaterial.setReflection(jop::Material::Reflection::Solid, jop::Color::White);
+        newMaterial.setReflection(jop::Material::Reflection::Diffuse, jop::Color::White);
+        //newMaterial.setReflection(jop::Material::Reflection::Solid, jop::Color::White * 0.1f);
     }
 
     void preUpdate(const float deltaTime) override

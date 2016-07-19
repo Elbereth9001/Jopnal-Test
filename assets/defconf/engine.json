@@ -19,7 +19,7 @@
     "DefaultWindow": {
         "uSizeX": 1600,
         "uSizeY": 900,
-        "sTitle": "MyProject",
+        "sTitle": "JopTestProject",
         "uMode": 0,
         "uMultisampling": 0,
         "uFrameLimit": 0,
@@ -35,12 +35,11 @@
         },
         "MainRenderTarget": {
             "fResolutionScale": 1.0,
-            "bUseWindow": false,
-            "sClearColor": "000000FF",
-            "bHDR": false
+            "bHDR": false,
+            "sClearColor": "000000FF"
         },
         "Texture": {
-            "uDefaultFilterMode": 0,
+            "uDefaultFilterMode": 1,
             "uDefaultRepeatMode": 0,
             "fDefaultAnisotropyLevel": 16.0,
             "fDefaultBorderColor": "FFFFFFFF"
@@ -50,17 +49,14 @@
                 "bEnabled": false,
                 "fExposure": 1.0
             },
-            "Bloom": {
-                "bEnabled": true,
-                "uKernelSize": 5,
-                "fThreshold": 0.9
-            },
-            "GammaCorrection": {
-                "bEnabled": false,
-                "fGamma": 2.200000047683716
-            },
             "Dithering": {
-                "bEnabled": true
+                "bEnabled": false
+            },
+            "Bloom": {
+                "bEnabled": false,
+                "uKernelSize": 5,
+                "fThreshold": 0.9,
+                "fSubThresholdExponent": 4.0
             }
         },
         "Shading": {
@@ -77,12 +73,11 @@
                 "sDefaultAmbient": "000000FF",
                 "sDefaultDiffuse": "FFFFFFFF",
                 "sDefaultSpecular": "FFFFFFFF"
-            }
-        },
-        "DefaultPerspectiveCamera": {
-            "fClipFar": 9999999.0,
-            "fClipNear": 1.0,
-            "fFovYRad": 0.9599310755729676
+            },
+            "fLightCullThreshold": 0.0010000000474974514,
+            "uShadowMapResolution": 512,
+            "uEnvironmentMapSize": 128,
+            "fEnvironmentRecordFarPlane": 1000.0
         },
         "DefaultOrthographicCamera": {
             "fClipFar": 1.0,
@@ -90,6 +85,11 @@
         },
         "Font": {
             "uTextureInitialSize": 256
+        },
+        "DefaultPerspectiveCamera": {
+            "fClipFar": 9999999.0,
+            "fClipNear": 1.0,
+            "fFovYRad": 0.9599310755729676
         }
     },
     "Physics": {
