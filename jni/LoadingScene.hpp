@@ -25,7 +25,7 @@ namespace jd
 
                     .setMesh(RM::getNamed<jop::RectangleMesh>("logoMesh", 0.5f))
                     .setMaterial(RM::getEmpty<jop::Material>("logoMat", MAT::DefaultLighting)
-                    .setMap(jop::Material::Map::Diffuse, RM::getResource<jop::Texture2D>("jop.png", true, true))
+                    .setMap(jop::Material::Map::Diffuse, RM::get<jop::Texture2D>("jop.png", true, true))
                     .setReflection(jop::Color(0x222222FF), jop::Color::White, jop::Color::Black, jop::Color::Black));
             }
 
@@ -46,7 +46,7 @@ namespace jd
             {
                 createChild("text")->move(0.f, 0.f, 0.f).setScale(0.001f).createComponent<jop::Text>(getRenderer())
 
-                    .setFont(RM::getResource<jop::Font>("Furore.ttf", 64))
+                    .setFont(RM::get<jop::Font>("Furore.ttf", 64))
                     .setString("please stand by")
                     .setColor(jop::Color(0x1C8EFFFF));
             }
@@ -63,9 +63,9 @@ namespace jd
         {
             using RM = jop::ResourceManager;
 
-            RM::unloadResource<jop::RectangleMesh>("logoMesh");
-            RM::unloadResource<jop::Material>("logoMat");
-            RM::unloadResource<jop::Texture2D>("jop.png");
+            RM::unload<jop::RectangleMesh>("logoMesh");
+            RM::unload<jop::Material>("logoMat");
+            RM::unload<jop::Texture2D>("jop.png");
         }
 
         void postUpdate(const float deltaTime) override

@@ -34,7 +34,7 @@ namespace jd
             root->createComponent<LightSource>(rend, LightSource::Type::Point).setAttenuation(0.f).setIntensity(Color::Black, Color::Green, Color::Green).setCastShadows(true);
 
             m_sound = &root->createComponent<SoundEffect>();
-            m_sound->setBuffer(ResourceManager::getResource<SoundBuffer>("flash.ogg"))
+            m_sound->setBuffer(ResourceManager::get<SoundBuffer>("flash.ogg"))
                 .setSpatialization(true)
                 .setAttenuation(0.8f)
                 .setVolume(100.f)
