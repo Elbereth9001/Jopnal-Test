@@ -1,4 +1,4 @@
-#if 1
+#if 0
 
 #include "DemoScene.hpp"
 #include "LoadingScene.hpp"
@@ -40,7 +40,7 @@ public:
 
         // Create an object with a directional light component
         auto light = createChild("light");
-        light->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Directional).setIntensity(jop::LightSource::Intensity::Diffuse, jop::Color::White * 5.f);
+        light->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Directional)/*.setIntensity(jop::LightSource::Intensity::Diffuse, jop::Color::White * 5.f)*/;
 
         // Move the light to the right and set it to point to the left
         // Notice that the rotation is expected to be in radians
