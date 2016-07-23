@@ -116,7 +116,7 @@ namespace jd
             // Sky sphere
             {
                 auto& map = ResourceManager::get<Texture2D>("starmap.jpg", true, false);
-                map.getSampler().setFilterMode(TextureSampler::Filter::Bilinear);
+                map.setFilterMode(TextureSampler::Filter::Bilinear);
 
                 createChild("sky")->createComponent<SkySphere>(getRenderer())
                     .setMap(map).getModel();
