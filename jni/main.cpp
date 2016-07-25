@@ -24,6 +24,7 @@ class MyScene : public jop::Scene
 private:
 
     jop::WeakReference<jop::Object> m_object;
+    jop::Material* newMaterial;
 
 public:
 
@@ -40,7 +41,7 @@ public:
 
         // Create an object with a directional light component
         auto light = createChild("light");
-        light->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Directional)/*.setIntensity(jop::LightSource::Intensity::Diffuse, jop::Color::White * 5.f)*/;
+        light->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Directional).setIntensity(jop::LightSource::Intensity::Ambient, jop::Color::Gray);
 
         // Move the light to the right and set it to point to the left
         // Notice that the rotation is expected to be in radians
@@ -49,17 +50,31 @@ public:
         auto drawable = m_object->getComponent<jop::GenericDrawable>();
 
         // To modify the drawable's material, we must create a new one to replace the default
-        auto& newMaterial = jop::ResourceManager::getEmpty<jop::Material>("newMaterial");
-        drawable->getModel().setMaterial(newMaterial);
+        newMaterial = &jop::ResourceManager::getEmpty<jop::Material>("newMaterial");
+        drawable->getModel().setMaterial(*newMaterial);
 
         // Set the diffuse reflection. This will automatically enable lighting
-        newMaterial.setReflection(jop::Material::Reflection::Diffuse, jop::Color::White);
-        //newMaterial.setReflection(jop::Material::Reflection::Solid, jop::Color::White * 0.1f);
+        newMaterial->setReflection(jop::Material::Reflection::Ambient, jop::Color::Gray);
+        newMaterial->setReflection(jop::Material::Reflection::Diffuse, jop::Color::White);
+        //newMaterial->setReflection(jop::Material::Reflection::Solid, jop::Color::Gray);
     }
 
     void preUpdate(const float deltaTime) override
     {
         m_object->rotate(0.5f * deltaTime, 1.f * deltaTime, 0.f);
+
+        static float count = 0.f;
+        //static bool toggle = true;
+        count += deltaTime;
+
+        //if (count >= 1.f)
+        //{
+            newMaterial->setReflection(jop::Material::Reflection::Solid, jop::Color::White * ((std::sin(count * 8.f) + 1.f) / 3.f));
+            //JOP_DEBUG_INFO(newMaterial->getAttributeField());
+
+            //toggle = !toggle;
+            //count = 0.f;
+        //}
     }
 };
 
