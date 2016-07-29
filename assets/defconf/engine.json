@@ -22,7 +22,7 @@
         "uSizeX": 1600,
         "uSizeY": 900,
         "sTitle": "MyProject",
-        "uMode": 0,
+        "uMode": 2,
         "uMultisampling": 0,
         "uFrameLimit": 0,
         "bVisible": true,

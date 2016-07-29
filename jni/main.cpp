@@ -57,11 +57,13 @@ public:
         newMaterial->setReflection(jop::Material::Reflection::Ambient, jop::Color::Gray);
         newMaterial->setReflection(jop::Material::Reflection::Diffuse, jop::Color::White);
         //newMaterial->setReflection(jop::Material::Reflection::Solid, jop::Color::Gray);
+
     }
 
     void preUpdate(const float deltaTime) override
     {
         m_object->rotate(0.5f * deltaTime, 1.f * deltaTime, 0.f);
+
 
         static float count = 0.f;
         //static bool toggle = true;
