@@ -35,7 +35,7 @@ public:
         createChild("cam")->createComponent<jop::Camera>(getRenderer(), jop::Camera::Projection::Perspective);
 
         m_object = createChild("box");
-        m_object->createComponent<jop::GenericDrawable>(getRenderer());
+        m_object->createComponent<jop::Drawable>(getRenderer());
         m_object->setPosition(0.f, 0.f, -2.5f);
 
 
@@ -47,11 +47,11 @@ public:
         // Notice that the rotation is expected to be in radians
         light->setPosition(5.f, 0.f, 0.f).setRotation(0.f, glm::radians(90.f), 0.f);
 
-        auto drawable = m_object->getComponent<jop::GenericDrawable>();
+        auto drawable = m_object->getComponent<jop::Drawable>();
 
         // To modify the drawable's material, we must create a new one to replace the default
         newMaterial = &jop::ResourceManager::getEmpty<jop::Material>("newMaterial");
-        drawable->getModel().setMaterial(*newMaterial);
+        drawable->getModel().setMaterial(*newMaterial);//.setMesh(jop::ResourceManager::getNamed<jop::SphereMesh>("ball", 0.5f, 20));
 
         // Set the diffuse reflection. This will automatically enable lighting
         newMaterial->setReflection(jop::Material::Reflection::Ambient, jop::Color::Gray);
