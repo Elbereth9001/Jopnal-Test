@@ -17,8 +17,8 @@ namespace jd
 
         LightBall(jop::Object& obj, jop::Renderer& rend)
             : jop::Component(obj, 0),
-              m_mat(jop::ResourceManager::getEmpty<jop::Material>("lightballmat", jop::Material::Attribute::Alpha, false)),
-              m_mesh(jop::ResourceManager::getNamed<jop::SphereMesh>("lightballmesh", 0.5f, 25, 25)),
+              m_mat(jop::ResourceManager::getEmpty<jop::Material>("lightballmat", false)),
+              m_mesh(jop::ResourceManager::getNamed<jop::SphereMesh>("lightballmesh", 0.5f, 25)),
               m_rend(rend),
               m_elapsed(0.f),
               m_spawning(false)
@@ -29,7 +29,7 @@ namespace jd
 
             m_mat.setReflection(Material::Reflection::Solid, Color::Green * 5.f);
 
-            root->createComponent<GenericDrawable>(rend).setModel(Model(m_mesh, m_mat));
+            root->createComponent<Drawable>(rend).setModel(Model(m_mesh, m_mat));
 
             root->createComponent<LightSource>(rend, LightSource::Type::Point).setAttenuation(0.f).setIntensity(Color::Black, Color::Green, Color::Green).setCastShadows(true);
 
@@ -81,15 +81,14 @@ namespace jd
                 auto randPointXZ = r.insideCircle(25.f);
                 auto randHeight = r.range(-2.5f, 2.5f);
 
-                getObject()->createChild("asdf")->setScale(0.25f).setIgnoreTransform(Object::Scale).setPosition(randPointXZ.x, randHeight, randPointXZ.y).createComponent<GenericDrawable>(m_rend).setModel(Model(m_mesh, m_mat)).setAlphaMultiplier(0.f);
+                getObject()->createChild("asdf")->setScale(0.25f).setIgnoreTransform(Object::Scale).setPosition(randPointXZ.x, randHeight, randPointXZ.y).createComponent<Drawable>(m_rend).setModel(Model(m_mesh, m_mat));
 
                 m_elapsed = 0.f;
             }
 
             for (auto& i : getObject()->getChildren())
             {
-                auto d = i.getComponent<GenericDrawable>();
-                d->setAlphaMultiplier(std::min(d->getAlphaMultiplier() + deltaTime * 0.25f, 1.f));
+                auto d = i.getComponent<Drawable>();
 
                 auto dist = glm::distance(getObject()->getGlobalPosition(), i.getGlobalPosition());
 

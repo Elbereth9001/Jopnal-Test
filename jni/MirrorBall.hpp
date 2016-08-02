@@ -15,19 +15,21 @@ namespace jd
             using MA = Material::Attribute;
             using RM = ResourceManager;
 
-            auto& mat = RM::getEmpty<Material>("mirrballmat", MA::DefaultLighting | MA::EnvironmentMap);
-            auto& mesh = RM::getNamed<SphereMesh>("mirrorballmesh", 2.5f, 30, 30);
+            auto& mat = RM::getEmpty<Material>("mirrballmat", false);
+            mat.setAttributeField(MA::DefaultLighting | MA::EnvironmentMap);
+
+            auto& mesh = RM::getNamed<SphereMesh>("mirrorballmesh", 2.5f, 30);
 
             auto ballObj = getObject()->createChild("ball");
             ballObj->setPosition(10.f, 0.f, 0.f);
 
-            mat.setMap(Material::Map::Environment, *ballObj->createComponent<EnvironmentRecorder>(rend).getTexture());
+            //mat.setMap(Material::Map::Environment, *ballObj->createComponent<EnvironmentRecorder>(rend).getTexture());
 
             mat.setReflectivity(1.f)
                .setShininess(256.f)
                .setReflection(Color::Black, Color::Black, Color::Black, Color::Black);
 
-            ballObj->createComponent<GenericDrawable>(rend).setModel(Model(mesh, mat)).setReflected(false);
+            ballObj->createComponent<Drawable>(rend).setModel(Model(mesh, mat)).setFlags(0xFFFFFFFF & ~jop::Drawable::Reflected);
         }
 
         void update(const float deltaTime) override

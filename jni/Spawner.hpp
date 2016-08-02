@@ -24,8 +24,9 @@ namespace jd
             auto root = getObject();
             root->setActive(false);
 
-            auto& baseMat = RM::getEmpty<Material>("spawnbasemat", Material::Attribute::DefaultLighting | Material::Attribute::DiffuseMap);
-            auto& baseMesh = RM::getNamed<SphereMesh>("spawnbasemesh", 0.35f, 20, 20);
+            auto& baseMat = RM::getEmpty<Material>("spawnbasemat", true);
+
+            auto& baseMesh = RM::getNamed<SphereMesh>("spawnbasemesh", 0.35f, 20);
 
             const glm::vec3 basePos(2.f, 0.f, 2.f);
 
@@ -44,7 +45,7 @@ namespace jd
                 child->setPosition(basePos.x * posMult[i].x, basePos.y, basePos.z * posMult[i].y);
                 child->setIgnoreTransform(Object::Rotation);
 
-                child->createComponent<GenericDrawable>(rend).setModel(Model(baseMesh, baseMat));
+                child->createComponent<Drawable>(rend).setModel(Model(baseMesh, baseMat));
             }
         }
 
@@ -67,7 +68,7 @@ namespace jd
                 newObj->setPosition(point);
                 newObj->scale(0.5f);
                 newObj->setIgnoreParent(true);
-                newObj->createComponent<jop::GenericDrawable>(m_rend).setModel(jop::Model(mesh, mat));
+                newObj->createComponent<jop::Drawable>(m_rend).setModel(jop::Model(mesh, mat));
 
                 jop::RigidBody::ConstructInfo info(jop::ResourceManager::getNamed<jop::SphereShape>("asdfshape", 0.35f * newObj->getLocalScale().x), jop::RigidBody::Type::Dynamic, 1.f);
                 info.restitution = 1.f;

@@ -21,10 +21,10 @@ namespace jd
 
             // Logo
             {
-                createChild("logo")->move(-0.5f, 0.f, 0.f).createComponent<jop::GenericDrawable>(getRenderer()).getModel()
+                createChild("logo")->move(-0.5f, 0.f, 0.f).createComponent<jop::Drawable>(getRenderer()).getModel()
 
                     .setMesh(RM::getNamed<jop::RectangleMesh>("logoMesh", 0.5f))
-                    .setMaterial(RM::getEmpty<jop::Material>("logoMat", MAT::DefaultLighting)
+                    .setMaterial(RM::getEmpty<jop::Material>("logoMat", true)
                     .setMap(jop::Material::Map::Diffuse, RM::get<jop::Texture2D>("jop.png", true, true))
                     .setReflection(jop::Color(0x222222FF), jop::Color::White, jop::Color::Black, jop::Color::Black));
             }

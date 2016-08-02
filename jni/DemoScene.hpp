@@ -9,7 +9,7 @@ namespace jd
 {
     class WaveTranslator : public jop::Component
     {
-        JOP_GENERIC_COMPONENT_CLONE(WaveTranslator);
+        //JOP_GENERIC_COMPONENT_CLONE(WaveTranslator);
 
         float m_sine;
         const float m_scale;
@@ -20,11 +20,6 @@ namespace jd
             : jop::Component(obj, 0),
               m_sine(glm::half_pi<float>()),
               m_scale(scale)
-        {}
-
-        WaveTranslator(const WaveTranslator& other, jop::Object& newObj)
-            : jop::Component(other, newObj),
-              m_scale(other.m_scale)
         {}
 
         void update(const float deltaTime) override
@@ -62,8 +57,8 @@ namespace jd
                     .setAttenuation(75.f)
                     .setCastShadows(true).
 
-                getObject()->createComponent<GenericDrawable>(getRenderer())
-                    .setModel(Model(RM::getNamed<SphereMesh>("spotbulb", 0.075f, 10, 10),
+                getObject()->createComponent<Drawable>(getRenderer())
+                    .setModel(Model(RM::getNamed<SphereMesh>("spotbulb", 0.075f, 10),
                                     RM::getEmpty<Material>("spotbulbmat", false)
                                     .setReflection(Material::Reflection::Solid, Color::White * 10.f)));
 
@@ -90,12 +85,13 @@ namespace jd
 
             // Ground
             {
-                auto& mat = RM::getEmpty<Material>("groundmat", MA::DefaultLighting | MA::DiffuseMap)
+                auto& mat = RM::getEmpty<Material>("groundmat", true)
                     .setReflection(Material::Reflection::Ambient, Color(0x666666FF))
-                    .setReflection(Material::Reflection::Specular, Color::Black);
+                    .setReflection(Material::Reflection::Specular, Color::Black)
+                    .setAttributeField(MA::DefaultLighting | MA::DiffuseMap);
 
-                createChild("ground")->createComponent<GenericDrawable>(getRenderer())
-                    .setCastShadows(false)
+                createChild("ground")->createComponent<Drawable>(getRenderer())
+                    .setFlags(0xFFFFFFFF & ~jop::Drawable::CastShadows)
                     .setModel(Model(RM::getNamed<RectangleMesh>("groundmesh", 50.f), mat));
 
                 RigidBody::ConstructInfo info(RM::getNamed<InfinitePlaneShape>("groundshape"));
@@ -140,7 +136,7 @@ namespace jd
                 if (obj->getGlobalPosition().y > -0.1f)
                 {
                     findChild("spawn")->setActive(true);
-                    findChild("mirror")->findChild("ball")->getComponent<jop::GenericDrawable>()
+                    findChild("mirror")->findChild("ball")->getComponent<jop::Drawable>()
                         ->getModel().getMaterial()->setReflection(jop::Material::Reflection::Specular, jop::Color::White);
 
                     findChild("lball")->setActive(true);
@@ -169,22 +165,21 @@ namespace jd
         void postUpdate(const float dt) override
         {
             using jop::Keyboard;
-            auto& h = *jop::Engine::getSubsystem<jop::Window>()->getEventHandler();
 
             auto cam = findChild("cam");
 
             if (!cam.expired())
             {
-                const float speed = 4.f + 6.f * h.keyDown(Keyboard::LControl);
+                const float speed = 4.f + 6.f * Keyboard::isKeyDown(Keyboard::LControl);
 
-                if (h.keyDown(Keyboard::A) || h.keyDown(Keyboard::D))
-                    cam->move((h.keyDown(Keyboard::D) ? 1.f : -1.f) * dt * speed * cam->getGlobalRight());
+                if (Keyboard::isKeyDown(Keyboard::A) || Keyboard::isKeyDown(Keyboard::D))
+                    cam->move((Keyboard::isKeyDown(Keyboard::D) ? 1.f : -1.f) * dt * speed * cam->getGlobalRight());
 
-                if (h.keyDown(Keyboard::W) || h.keyDown(Keyboard::S))
-                    cam->move((h.keyDown(Keyboard::W) ? 1.f : -1.f) * dt * speed * cam->getGlobalFront());
+                if (Keyboard::isKeyDown(Keyboard::W) || Keyboard::isKeyDown(Keyboard::S))
+                    cam->move((Keyboard::isKeyDown(Keyboard::W) ? 1.f : -1.f) * dt * speed * cam->getGlobalFront());
 
-                if (h.keyDown(Keyboard::Space) || h.keyDown(Keyboard::LShift))
-                    cam->move((h.keyDown(Keyboard::Space) ? 1.f : -1.f) * dt * speed * cam->getGlobalUp());
+                if (Keyboard::isKeyDown(Keyboard::Space) || Keyboard::isKeyDown(Keyboard::LShift))
+                    cam->move((Keyboard::isKeyDown(Keyboard::Space) ? 1.f : -1.f) * dt * speed * cam->getGlobalUp());
             }
         }
     };
