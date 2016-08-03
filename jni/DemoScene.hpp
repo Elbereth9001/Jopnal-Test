@@ -45,6 +45,9 @@ namespace jd
             using RM = ResourceManager;
             using MA = Material::Attribute;
 
+            //ResourceManager::beginLoadPhase();
+            getWorld<3>().setDebugMode(true);
+
             // Lights
             {
                 using LS = LightSource;
@@ -58,9 +61,9 @@ namespace jd
                     .setCastShadows(true).
 
                 getObject()->createComponent<Drawable>(getRenderer())
-                    .setModel(Model(RM::getNamed<SphereMesh>("spotbulb", 0.075f, 10),
+                    .setModel(Model(RM::getNamed<SphereMesh>("spotbulb", 0.25f, 10),
                                     RM::getEmpty<Material>("spotbulbmat", false)
-                                    .setReflection(Material::Reflection::Solid, Color::White * 10.f)));
+                                    .setReflection(Material::Reflection::Solid, Color::White * 2.f)));
 
                 //auto& stream = findChild("pointlight1")->createComponent<SoundStream>();
                 //stream.setPath("pulse.wav");
@@ -119,6 +122,8 @@ namespace jd
             }
             
             Engine::getSubsystem<Window>()->setEventHandler<EventHandler>();
+
+            //ResourceManager::endLoadPhase(10);
         }
 
         ~DemoScene() override
