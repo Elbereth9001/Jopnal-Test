@@ -5,6 +5,10 @@
 
 int main(int c, char* v[])
 {
+#ifdef JOP_OS_ANDROID
+    jop::SettingManager::setDefaultDirectory("defconf");
+    jop::SettingManager::setOverrideWithDefaults();
+#endif
     JOP_ENGINE_INIT("JopTestProject", c, v);
     
     jop::Engine::getSubsystem<jop::Window>()->setMouseMode(jop::Mouse::Mode::Frozen);
@@ -50,7 +54,7 @@ public:
         auto drawable = m_object->getComponent<jop::Drawable>();
 
         // To modify the drawable's material, we must create a new one to replace the default
-        newMaterial = &jop::ResourceManager::getEmpty<jop::Material>("newMaterial");
+        newMaterial = &jop::ResourceManager::getEmpty<jop::Material>("newMaterial", true);
         drawable->getModel().setMaterial(*newMaterial);//.setMesh(jop::ResourceManager::getNamed<jop::SphereMesh>("ball", 0.5f, 20));
 
         // Set the diffuse reflection. This will automatically enable lighting

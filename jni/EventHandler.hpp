@@ -105,5 +105,10 @@ namespace jd
             mouseMoved((axisIndex == jop::Controller::Playstation::Axis::RightStickX) * shift * mult,
                        (axisIndex == jop::Controller::Playstation::Axis::RightStickY) * shift * mult);
         }
+
+        void touchMoved(const int touchId, const float x, const float y) override
+        {
+            mouseMoved(-x, -y);
+        }
     };
 }

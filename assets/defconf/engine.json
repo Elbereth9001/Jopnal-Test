@@ -11,7 +11,7 @@
             "bDebuggerOutput": true
         },
         "bPrintShaderUniformLocationErrors": true,
-        "bValidateShaders": false,
+        "bValidateShaders": true,
         "bPrintOpenGLExtensions": true,
         "bPrintOpenGLCapabilities": true
     },
@@ -39,7 +39,7 @@
             "fResolutionScale": 1.0,
             "bUseWindow": false,
             "sClearColor": "000000FF",
-            "bHDR": false
+            "bHDR": true
         },
         "Texture": {
             "uDefaultFilterMode": 0,
@@ -49,7 +49,7 @@
         },
         "Postprocessor": {
             "Tonemapping": {
-                "bEnabled": false,
+                "bEnabled": true,
                 "fExposure": 1.0
             },
             "Bloom": {
@@ -60,7 +60,7 @@
             },
             "bEnable": false,
             "GammaCorrection": {
-                "bEnabled": false,
+                "bEnabled": true,
                 "fGamma": 2.200000047683716
             },
             "Dithering": {

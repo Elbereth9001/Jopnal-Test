@@ -9,8 +9,6 @@ namespace jd
 {
     class WaveTranslator : public jop::Component
     {
-        //JOP_GENERIC_COMPONENT_CLONE(WaveTranslator);
-
         float m_sine;
         const float m_scale;
 
@@ -45,8 +43,8 @@ namespace jd
             using RM = ResourceManager;
             using MA = Material::Attribute;
 
-            //ResourceManager::beginLoadPhase();
-            getWorld<3>().setDebugMode(true);
+            ResourceManager::beginLoadPhase();
+            //getWorld<3>().setDebugMode(true);
 
             // Lights
             {
@@ -78,7 +76,7 @@ namespace jd
 
             // Mirror ball
             {
-                createChild("mirror")->setPosition(0.f, 4.f, 0.f).createComponent<MirrorBall>(getRenderer());
+                //createChild("mirror")->setPosition(0.f, 4.f, 0.f).createComponent<MirrorBall>(getRenderer());
             }
 
             // Light ball
@@ -114,16 +112,22 @@ namespace jd
 
             // Sky sphere
             {
-                auto& map = ResourceManager::get<Texture2D>("starmap.jpg", true, false);
+                //auto& map = ResourceManager::get<Texture2D>("starmap.jpg", true, false);
+                //map.setFilterMode(TextureSampler::Filter::Bilinear);
+                //
+                //createChild("sky")->createComponent<SkySphere>(getRenderer())
+                //    .setMap(map).getModel();
+
+                auto& map = ResourceManager::get<Cubemap>("right.png", "left.png", "top.png", "bottom.png", "back.png", "front.png", true, false);
                 map.setFilterMode(TextureSampler::Filter::Bilinear);
 
-                createChild("sky")->createComponent<SkySphere>(getRenderer())
-                    .setMap(map).getModel();
+                createChild("sky")->createComponent<SkyBox>(getRenderer())
+                    .setMap(map);
             }
             
             Engine::getSubsystem<Window>()->setEventHandler<EventHandler>();
 
-            //ResourceManager::endLoadPhase(10);
+            Keyboard::showVirtualKeyboard(true);
         }
 
         ~DemoScene() override
@@ -141,8 +145,8 @@ namespace jd
                 if (obj->getGlobalPosition().y > -0.1f)
                 {
                     findChild("spawn")->setActive(true);
-                    findChild("mirror")->findChild("ball")->getComponent<jop::Drawable>()
-                        ->getModel().getMaterial()->setReflection(jop::Material::Reflection::Specular, jop::Color::White);
+                    //findChild("mirror")->findChild("ball")->getComponent<jop::Drawable>()
+                    //    ->getModel().getMaterial()->setReflection(jop::Material::Reflection::Specular, jop::Color::White);
 
                     findChild("lball")->setActive(true);
                 }

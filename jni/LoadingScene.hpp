@@ -81,6 +81,7 @@ namespace jd
                 if (newColor.alpha <= 0.f)
                 {
                     jop::Engine::signalNewScene();
+                    jop::ResourceManager::endLoadPhase(10);
                     return;
                 }
                 
