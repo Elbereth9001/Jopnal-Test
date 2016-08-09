@@ -40,7 +40,7 @@
             "fResolutionScale": 1.0,
             "bUseWindow": false,
             "sClearColor": "000000FF",
-            "bHDR": true
+            "bHDR": false
         },
         "Texture": {
             "uDefaultFilterMode": 0,
@@ -50,7 +50,7 @@
         },
         "Postprocessor": {
             "Tonemapping": {
-                "bEnabled": true,
+                "bEnabled": false,
                 "fExposure": 1.0
             },
             "Bloom": {
