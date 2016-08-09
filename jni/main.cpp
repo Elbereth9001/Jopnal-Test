@@ -1,86 +1,97 @@
-#if 1
-
-#include "DemoScene.hpp"
-#include "LoadingScene.hpp"
-
-int main(int c, char* v[])
-{
-#ifdef JOP_OS_ANDROID
-    jop::SettingManager::setDefaultDirectory("defconf");
-    jop::SettingManager::setOverrideWithDefaults();
-#endif
-    JOP_ENGINE_INIT("JopTestProject", c, v);
-    
-    jop::Engine::getSubsystem<jop::Window>()->setMouseMode(jop::Mouse::Mode::Frozen);
-
-    jop::Engine::createScene<jd::LoadingScene>();
-    jop::Engine::createScene<jd::DemoScene, true, true>();
-
-    return JOP_MAIN_LOOP;
-}
-
-#else
 
 #include <Jopnal/Jopnal.hpp>
+
+#include "EventHandler.hpp"
+#include "Object.hpp"
+#include "Player.hpp"
 
 class MyScene : public jop::Scene
 {
 private:
 
-    jop::WeakReference<jop::Object> m_object;
+    jop::WeakReference<jop::Object> m_player;
+    jop::WeakReference<jop::Object> m_ground;
     jop::Material* newMaterial;
+
+    std::pair<float, float> m_endPoint;
 
 public:
 
     MyScene()
         : jop::Scene("MyScene"),
-        m_object()
+        m_player()
     {
-        createChild("cam")->createComponent<jop::Camera>(getRenderer(), jop::Camera::Projection::Perspective);
 
-        m_object = createChild("box");
-        m_object->createComponent<jop::Drawable>(getRenderer());
-        m_object->setPosition(0.f, 0.f, -2.5f);
+        getWorld<2>().setDebugMode(true);
 
+        auto m_cam = createChild("cam");
+        m_cam->createComponent<jop::Camera>(getRenderer(), jop::Camera::Projection::Perspective);
+        m_cam->setPosition(0.f, 0.f, 5.f);
 
-        // Create an object with a directional light component
-        auto light = createChild("light");
-        light->createComponent<jop::LightSource>(getRenderer(), jop::LightSource::Type::Directional).setIntensity(jop::LightSource::Intensity::Ambient, jop::Color::Gray);
+        //Player
+        {
+            m_player = createChild("player");
 
-        // Move the light to the right and set it to point to the left
-        // Notice that the rotation is expected to be in radians
-        light->setPosition(5.f, 0.f, 0.f).setRotation(0.f, glm::radians(90.f), 0.f);
+            jop::RigidBody2D::ConstructInfo2D playerInfo(jop::ResourceManager::getNamed<jop::RectangleShape2D >("player", 1.f, 2.f), jop::RigidBody2D::Type::Dynamic, 1.2f);
+            m_player->createComponent<jop::RigidBody2D>(getWorld<2>(), playerInfo);
+            //m_player->createComponent<jop::Drawable>(getRenderer());
+            m_player->setPosition(15.f, 15.f, 0.f);
 
-        auto drawable = m_object->getComponent<jop::Drawable>();
+            auto drawable = m_player->getComponent<jop::Drawable>();
+        }
 
+        //Ground
+#if 1
+        {
+            jop::Randomizer r;
+            std::vector<glm::vec2> ground;
+
+            float firstPointX = 0.f;
+            float secondPointX;
+            float firstPointY = 0.f;
+            float secondPointY;
+
+            ground.emplace_back(firstPointX, secondPointX);
+
+            for (unsigned int i = 0; i < r.range<unsigned int>(0u, 6u); ++i)
+            {
+                secondPointX = r.range<float>(firstPointX, firstPointX + 5.f);
+                ground.emplace_back(firstPointX, secondPointX);
+                firstPointX = secondPointX;
+
+                secondPointY = r.range<float>(firstPointY - 2.f, firstPointY + 2.f);
+                ground.emplace_back(firstPointY, secondPointY);
+                firstPointY = secondPointY;
+            }
+
+            m_endPoint = std::make_pair(secondPointX, secondPointY);
+
+            jop::RigidBody2D::ConstructInfo2D groundInfo(jop::ResourceManager::getNamed<jop::TerrainShape2D>("ground", ground));
+
+            m_ground = createChild("ground");
+            m_ground->createComponent<jop::RigidBody2D>(getWorld<2>(), groundInfo);
+
+        }
+#endif
         // To modify the drawable's material, we must create a new one to replace the default
-        newMaterial = &jop::ResourceManager::getEmpty<jop::Material>("newMaterial", true);
-        drawable->getModel().setMaterial(*newMaterial);//.setMesh(jop::ResourceManager::getNamed<jop::SphereMesh>("ball", 0.5f, 20));
-
-        // Set the diffuse reflection. This will automatically enable lighting
-        newMaterial->setReflection(jop::Material::Reflection::Ambient, jop::Color::Gray);
-        newMaterial->setReflection(jop::Material::Reflection::Diffuse, jop::Color::White);
-        //newMaterial->setReflection(jop::Material::Reflection::Solid, jop::Color::Gray);
+        //newMaterial = &jop::ResourceManager::getEmpty<jop::Material>("newMaterial", true);
+        //drawable->getModel().setMaterial(*newMaterial);//.setMesh(jop::ResourceManager::getNamed<jop::SphereMesh>("ball", 0.5f, 20));
 
     }
 
     void preUpdate(const float deltaTime) override
     {
-        m_object->rotate(0.5f * deltaTime, 1.f * deltaTime, 0.f);
+        using jc = jop::Controller;
 
+        float moveX = jc::getAxisOffset(0u, jc::Playstation::Axis::LeftStickX);
+        float moveY = jc::getAxisOffset(0u, jc::Playstation::Axis::LeftStickY);
 
-        static float count = 0.f;
-        //static bool toggle = true;
-        count += deltaTime;
+        m_player->move(moveX, moveY, 0.f);
+        m_player->getComponent<jop::RigidBody2D>()->synchronizeTransform();
 
-        //if (count >= 1.f)
-        //{
-            newMaterial->setReflection(jop::Material::Reflection::Solid, jop::Color::White * ((std::sin(count * 8.f) + 1.f) / 3.f));
-            //JOP_DEBUG_INFO(newMaterial->getAttributeField());
+        JOP_DEBUG_INFO("move X: " << moveX);
+        JOP_DEBUG_INFO("move Y: " << moveY);
 
-            //toggle = !toggle;
-            //count = 0.f;
-        //}
     }
 };
 
@@ -97,5 +108,3 @@ int main(int argc, char* argv[])
 
     return JOP_MAIN_LOOP;
 }
-
-#endif

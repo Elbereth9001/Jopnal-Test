@@ -1,7 +1,4 @@
-#pragma once
-#include "Spawner.hpp"
-#include "LightBall.hpp"
-
+#include <Jopnal/Jopnal.hpp>
 
 namespace jd
 {
@@ -31,50 +28,23 @@ namespace jd
                 auto& scene = Engine::getCurrentScene();
 
                 if (key == Keyboard::T)
+                {
                     scene.printDebugTree();
+                }
 
                 if (key == Keyboard::O)
                 {
-                    auto spawn = scene.findChild("spawn");
-                    if (!spawn.expired())
-                        spawn->getComponent<Spawner>()->toggleSpawning();
                 }
 
                 if (key == Keyboard::I)
                 {
-                    auto spawn = scene.findChild("lball");
-                    if (!spawn.expired())
-                        spawn->getComponent<LightBall>()->toggleSpawning();
+
                 }
-
-                if (key == Keyboard::M)
-                {
-                    auto mus = Engine::getCurrentScene().getComponent<jop::SoundStream>();
-
-                    mus->getStatus() == jop::SoundSource::Status::Paused ? mus->play() : mus->pause();
-                }
-
-                if (key == Keyboard::R)
-                    scene.setDeltaScale(1.f);
-
-                if (key == Keyboard::Up)
-                    scene.setDeltaScale(scene.getDeltaScale() < 0.2f ? scene.getDeltaScale() * 2.f : scene.getDeltaScale() + 0.2f);
-
-                if (key == Keyboard::Down)
-                    scene.setDeltaScale(std::max(scene.getDeltaScale() < 0.21f ? scene.getDeltaScale() * 0.5f : scene.getDeltaScale() - 0.2f, 0.01f));
-
-                auto mus = scene.getComponent<jop::SoundStream>();
-                if (mus)
-                    mus->setPitch(std::min((1.f + scene.getDeltaScale()) / 2.f, 5.f));
             }
 
             if (key == Keyboard::Key::P)
                 Engine::setState(Engine::getState() == Engine::State::Running ? Engine::State::RenderOnly : Engine::State::Running);
 
-            if ((mods & Keyboard::Modifier::Control) != 0 && key == Keyboard::S)
-            {
-                jop::SettingManager::save();
-            }
         }
 
         void mouseMoved(const float x, const float y) override
@@ -103,12 +73,7 @@ namespace jd
             const float mult = 15.f;
 
             mouseMoved((axisIndex == jop::Controller::Playstation::Axis::RightStickX) * shift * mult,
-                       (axisIndex == jop::Controller::Playstation::Axis::RightStickY) * shift * mult);
-        }
-
-        void touchMoved(const int touchId, const float x, const float y) override
-        {
-            mouseMoved(-x, -y);
+                (axisIndex == jop::Controller::Playstation::Axis::RightStickY) * shift * mult);
         }
     };
 }
