@@ -13,7 +13,8 @@
         "bPrintShaderUniformLocationErrors": true,
         "bValidateShaders": true,
         "bPrintOpenGLExtensions": true,
-        "bPrintOpenGLCapabilities": true
+        "bPrintOpenGLCapabilities": true,
+        "bPrintEGLExtensions": true
     },
     "Filesystem": {
         "bErrorChecks": true
@@ -22,7 +23,7 @@
         "uSizeX": 1600,
         "uSizeY": 900,
         "sTitle": "MyProject",
-        "uMode": 2,
+        "uMode": 1,
         "uMultisampling": 0,
         "uFrameLimit": 0,
         "bVisible": true,
