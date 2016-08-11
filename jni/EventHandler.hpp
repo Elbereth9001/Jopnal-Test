@@ -1,79 +1,52 @@
+#ifndef EVENTS_HPP
+#define EVENT_HPP
+
 #include <Jopnal/Jopnal.hpp>
 
 namespace jd
 {
-    class EventHandler : public jop::WindowEventHandler
+    using namespace jop;
+
+    class EventHandler : public WindowEventHandler
     {
     public:
 
-        EventHandler(jop::Window& window)
-            : jop::WindowEventHandler(window)
+        EventHandler(Window& window)
+            : WindowEventHandler(window)
         {}
 
         void closed() override
         {
-            jop::Engine::exit();
+            Engine::exit();
+        }
+
+        void controllerButtonPressed(const int index, const int button) override
+        {
+            using c = Controller::XBox;
+            using k = Keyboard;
+
+            if (button == c::Back)
+                keyPressed(k::Escape, 0u, 0u);
+
+            if (button == Controller::XBox::Start)
+                keyPressed(k::P, 0u, 0u);
         }
 
         void keyPressed(const int key, const int, const int mods) override
         {
-            using jop::Keyboard;
-            using jop::Engine;
+            using k = Keyboard;
 
             if (key == Keyboard::Escape)
-                closed();
-
-            if (Engine::hasCurrentScene())
             {
-                auto& scene = Engine::getCurrentScene();
-
-                if (key == Keyboard::T)
-                {
-                    scene.printDebugTree();
-                }
-
-                if (key == Keyboard::O)
-                {
-                }
-
-                if (key == Keyboard::I)
-                {
-
-                }
+                auto& s = static_cast<tehGame&>(Engine::getCurrentScene());
+                s.hasEnded ? closed() : s.end();
             }
-
-            if (key == Keyboard::Key::P)
-                Engine::setState(Engine::getState() == Engine::State::Running ? Engine::State::RenderOnly : Engine::State::Running);
-
-        }
-
-        void mouseMoved(const float x, const float y) override
-        {
-            using jop::Engine;
-
-            if (!Engine::hasCurrentScene())
-                return;
-
-            auto cam = Engine::getCurrentScene().findChild("cam");
-
-            if (!cam.expired())
+            if (Engine::getState() == Engine::State::Running)
             {
-                static glm::vec2 totals(0.f);
-                const glm::vec2 delta = glm::vec2(x, y) * 0.1f;
-
-                totals.x += delta.x;
-                totals.y = glm::clamp(totals.y + delta.y, -85.f, 85.f);
-
-                cam->setRotation(glm::radians(-totals.y), glm::radians(-totals.x), 0.f);
+                if (key == Keyboard::Key::P || key == Keyboard::Key::Pause)
+                    Engine::setState(Engine::getState() == Engine::State::Running ? Engine::State::Frozen : Engine::State::Running);
             }
-        }
-
-        void controllerAxisShifted(const int, const int axisIndex, const float shift)
-        {
-            const float mult = 15.f;
-
-            mouseMoved((axisIndex == jop::Controller::Playstation::Axis::RightStickX) * shift * mult,
-                (axisIndex == jop::Controller::Playstation::Axis::RightStickY) * shift * mult);
         }
     };
 }
+#endif
