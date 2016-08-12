@@ -3,6 +3,7 @@
 #include <Jopnal/Jopnal.hpp>
 
 using namespace jop;
+class Ress;
 
 class Characters
 {
@@ -15,7 +16,6 @@ public:
 
     Characters(Scene& sceneRef) :
         m_scene(sceneRef)
-
     {
 
     }
@@ -24,13 +24,9 @@ public:
 
 std::pair<WeakReference<jop::Object>, WeakReference<jop::Object>> Characters::createPlayer()
 {
-
-
-
     WeakReference<jop::Object> player = m_scene.createChild("player");
     {
-        RigidBody2D::ConstructInfo2D playerInfo(ResourceManager::getNamed<CapsuleShape2D>("player", 1.f, 2.f), RigidBody2D::Type::Dynamic, 1.2f);
-        player->createComponent<RigidBody2D>(m_scene.getWorld<2>(), playerInfo);
+        player->createComponent<RigidBody2D>(m_scene.getWorld<2>(), *c_playerInfo);
         player->setPosition(s_playerStartPos);
 
         auto& tex = ResourceManager::get<Texture2D>("tehGame/player.png", true, false);
@@ -40,6 +36,13 @@ std::pair<WeakReference<jop::Object>, WeakReference<jop::Object>> Characters::cr
         mat.setMap(Material::Map::Diffuse, tex);
 
         player->createComponent< jop::Drawable>(m_scene.getRenderer()).setModel(Model(mesh, mat));
+
+        //Player animation
+        {
+            player->setScale(0.003f); //big tex
+            player->createComponent<AnimatedSprite>(m_scene.getRenderer());
+            player->getComponent<AnimatedSprite>()->setAnimationRange(0u, 11u).setFrameTime(1.f / 60.f).setAtlas(*c_animAtlas);
+        }
     }
 
     WeakReference<jop::Object> crossHair = m_scene.createChild("crossHair");

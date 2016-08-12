@@ -41,11 +41,9 @@ namespace jd
                 auto& s = static_cast<tehGame&>(Engine::getCurrentScene());
                 s.hasEnded ? closed() : s.end();
             }
-            if (Engine::getState() == Engine::State::Running)
-            {
-                if (key == Keyboard::Key::P || key == Keyboard::Key::Pause)
-                    Engine::setState(Engine::getState() == Engine::State::Running ? Engine::State::Frozen : Engine::State::Running);
-            }
+
+            if (key == Keyboard::Key::P || key == Keyboard::Key::Pause)
+                Engine::setState(Engine::getState() == Engine::State::Running ? Engine::State::RenderOnly : Engine::State::Running);
         }
     };
 }
