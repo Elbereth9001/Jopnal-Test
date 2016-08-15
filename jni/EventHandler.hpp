@@ -17,6 +17,8 @@ namespace jd
 
         void closed() override
         {
+            static_cast<jop::SoundEffect&>(*Engine::getCurrentScene().findChild("player")->getComponent<jop::SoundEffect>(22u)).play();
+            std::this_thread::sleep_for(std::chrono::milliseconds(1500u));
             Engine::exit();
         }
 
@@ -29,7 +31,7 @@ namespace jd
                 keyPressed(k::Escape, 0u, 0u);
 
             if (button == Controller::XBox::Start)
-                keyPressed(k::P, 0u, 0u);
+                keyPressed(k::Enter, 0u, 0u);
         }
 
         void keyPressed(const int key, const int, const int mods) override
@@ -42,8 +44,12 @@ namespace jd
                 s.hasEnded ? closed() : s.end();
             }
 
-            if (key == Keyboard::Key::P || key == Keyboard::Key::Pause)
-                Engine::setState(Engine::getState() == Engine::State::Running ? Engine::State::RenderOnly : Engine::State::Running);
+            if (key == Keyboard::Key::Enter)
+            {
+                auto& s = static_cast<tehGame&>(Engine::getCurrentScene());
+                s.hasEnded ? s.destroy() :
+                    Engine::setState(Engine::getState() == Engine::State::Running ? Engine::State::RenderOnly : Engine::State::Running);
+            }
         }
     };
 }
