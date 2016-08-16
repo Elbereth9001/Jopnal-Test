@@ -13,11 +13,11 @@ private:
     Player* m_playerPtr;
 
     std::vector<Characters*> m_chars;
-    
+
     SceneWorld m_world;
 
     void init();
-    void createCamera();
+    void createUI();
     void jump(jop::RigidBody2D& body);
 
 public:
@@ -26,9 +26,6 @@ public:
 
     void destroy();
     void end();
-    void shootPlayer();
-
-    bool rot;
 
     tehGame()
         : Scene("tehGame"),
@@ -38,8 +35,7 @@ public:
         m_playerPtr(nullptr),
         m_world(*this),
         m_chars(),
-        hasEnded(false),
-        rot(false)
+        hasEnded(false)
     {
         getWorld<2>().setDebugMode(true);
 
@@ -48,7 +44,9 @@ public:
 
         init();
 
-        Engine::setState(Engine::State::Running);
+        createUI();
+
+        jop::Engine::setState(jop::Engine::State::Running);
     }
 
     void preUpdate(const float deltaTime) override
@@ -99,6 +97,7 @@ public:
                 std::min(std::max(vel.x, -s_maxMoveSpeed), s_maxMoveSpeed),
                 std::min(std::max(vel.y, -s_maxMoveSpeed), s_maxMoveSpeed)
                 ));
+
         }
 #endif
 
@@ -127,62 +126,130 @@ public:
         //Player stand up
 #if 1
         if (m_playerPtr->m_character->getGlobalRotation().z < -0.05f)
-            m_playerPtr->m_character->getComponent<RigidBody2D>()->applyTorque(9.f);
+            m_playerPtr->m_character->getComponent<jop::RigidBody2D>()->applyTorque(9.f);
 
         if (m_playerPtr->m_character->getGlobalRotation().z > 0.05f)
-            m_playerPtr->m_character->getComponent<RigidBody2D>()->applyTorque(-9.f);
+            m_playerPtr->m_character->getComponent<jop::RigidBody2D>()->applyTorque(-9.f);
 #endif
 
-        //Camera follow
+        //Camera & UI follow
 #if 1
         m_cam->setPosition(
             m_playerPtr->m_character->getGlobalPosition().x,
             m_playerPtr->m_character->getGlobalPosition().y,
             m_cam->getGlobalPosition().z
             );
+
+        auto p = m_cam->getGlobalPosition();
+        {
+            auto score = findChild("scoreText");
+            score->setPosition(
+                p.x + 5.f,
+                p.y + 5.f,
+                p.z
+                );
+            score->getComponent<jop::Text>()->setString(std::to_string(g_score)).setColor(jop::Color::Orange);
+        }
+        {
+            auto health = findChild("healthText");
+            health->setPosition(
+                p.x - 5.f,
+                p.y - 5.f,
+                p.z
+                );
+            health->getComponent<jop::Text>()->setString(std::to_string(m_playerPtr->getHealth())).setColor(jop::Color::Green);
+        }
+
 #endif
     }
 
     void postUpdate(const float deltaTime) override
     {
-        using c = Controller;
-        using k = Keyboard;
-        using m = Mouse;
+        using c = jop::Controller;
+        using k = jop::Keyboard;
+        using m = jop::Mouse;
 
         std::for_each(m_chars.begin(), m_chars.end(), [deltaTime](Characters* c)
         {
             c->reduceCDs(deltaTime);
         });
 
-        auto pl_rb = findChild("player")->getComponent<RigidBody2D>();
+        //Jump
+#if 1
+        if (g_cc)
+            if (c::isButtonDown(0u, c::XBox::A))
+                m_playerPtr->jump();
+
+        if (k::isKeyDown(k::Space))
+            m_playerPtr->jump();
+#endif
+
+        //Shoot
+#if 1
+        if (g_cc)
+            if ((c::getAxisOffset(0u, c::XBox::RightStickX) != 0.f) || (c::getAxisOffset(0u, c::XBox::RightStickY) != 0.f))
+                m_playerPtr->shoot();
+
+        if (m::isButtonDown(m::Left))
+            m_playerPtr->shoot();
+
+        std::for_each(m_chars.begin() + 1u, m_chars.end(), [](Characters* c){c->shoot(); });
+
+#endif
 
         //Deal damage
 #if 1
-        
-        //Only one bullet wound to char, one bullet can harm many chars
+
+        // A character receives only one wound per turn, no matter how many bullets are touching
+        // A single bullet can harm many characters at once
+
         for (auto& charsItr : m_chars)
         {
             for (auto& bulletsItr : m_bullets->getChildren())
             {
-                if (charsItr->m_character->getComponent<jop::RigidBody2D>()->checkContact(bulletsItr))
+                //Not immune
+                if (!charsItr->isImmune())
+                {
+                    //If there is a contact
+                    if (charsItr->m_character->getComponent<jop::RigidBody2D>()->checkContact(*bulletsItr.getComponent<jop::Collider2D>()))
+                    {
+                        charsItr->dealDamage(1);
+                        charsItr->applyImmuneCD();
 
+                        //This character has been wounded, end bulletsItr
+                        break;
+                    }
+                }
             }
         }
+#endif
 
-        std::for_each(m_chars.begin(), m_chars.end(), [&m_playerPtr, m_bullets](Characters* c){
-
-            if (std::any_of(m_bullets->getChildren().begin(), m_bullets->getChildren().end(), [&pl_rb](jop::Object& obj)
+        //Remove dead
+#if 1
+        for (unsigned int i = 0; i < m_chars.size(); ++i)
+        {
+            if (m_chars[i]->getHealth() <= 0)
             {
-                return (pl_rb->checkContact(*obj.getComponent<Collider2D>()));
-            }))
-            {
-                --c->m_health;
-                if (-- m_health == 0u)
+                if (m_chars[i] == m_playerPtr)
                     end();
-                m_immuneCD = s_immuneCD;
+                else
+                {
+                    switch (m_chars[i]->getType())
+                    {
+                    case CharacterType::staticC:
+                        g_score += 1u;
+                        break;
+                    case CharacterType::targetC:
+                        g_score += 5u;
+                        break;
+                    }
+                    m_chars[i]->m_character->removeSelf();
+                    delete m_chars[i];
+                    m_chars.erase(m_chars.begin() + i);
+                }
             }
-        });
         }
+
 #endif
 
         //Remove bullets
@@ -199,31 +266,13 @@ public:
 
 #endif
 
-        //Jump
-#if 1
-        if (g_cc)
-            if (c::isButtonDown(0u, c::XBox::A))
-                jump(*pl_rb);
-
-        if (k::isKeyDown(k::Space))
-            jump(*pl_rb);
-#endif
-
-        //Shoot
-#if 1
-        if (g_cc)
-            if (c::getAxisOffset(0u, c::XBox::RTrigger))
-                shootPlayer();
-
-        if (m::isButtonDown(m::Left))
-            shootPlayer();
-#endif
 
         //NextLevel
 #if 1
         if (findChild("player")->getGlobalPosition().x >= m_world.m_endPoint)
         {
             g_score += m_world.m_levelLength;
+            g_healthPlayerStart = m_playerPtr->getHealth();
             if (g_density != 1u)
                 --g_density;
             destroy();
@@ -241,46 +290,92 @@ public:
 
 void tehGame::end()
 {
-    Vibrator::vibrate(1000u);
-    Engine::setState(Engine::State::RenderOnly);
+    jop::Vibrator::vibrate(1000u);
+    jop::Engine::setState(jop::Engine::State::RenderOnly);
 
     static_cast<jop::SoundEffect&>(*m_playerPtr->m_character->getComponent<jop::SoundEffect>(23u)).play();
 
     m_cam->setPosition(s_playerStartPos.x, s_playerStartPos.y, s_playerStartPos.z);
-    m_cam->getComponent<Camera>()->setRenderMask(2u);
-
-    WeakReference<jop::Object> overText = createChild("overText");
-    overText->setScale(0.01f).setPosition(s_playerStartPos.x, s_playerStartPos.y + 5.f, s_playerStartPos.z);
-    overText->createComponent<Text>(getRenderer()).setRenderGroup(1u);
-    overText->getComponent<Text>()->setString("Game over!").setColor(Color::Purple);
-
-    WeakReference<jop::Object> scoreText = createChild("scoreText");
-    scoreText->setScale(0.01f).setPosition(s_playerStartPos);
-    scoreText->createComponent<Text>(getRenderer()).setRenderGroup(1u);
-    scoreText->getComponent<Text>()->setString("Your score: " + std::to_string(g_score)).setColor(Color::Orange);
-
+    m_cam->getComponent<jop::Camera>()->setRenderMask(2u);
+    {
+        jop::WeakReference<jop::Object> overText = createChild("overText");
+        overText->setScale(0.01f).setPosition(s_playerStartPos.x, s_playerStartPos.y + 2.f, s_playerStartPos.z);
+        overText->createComponent<jop::Text>(getRenderer()).setRenderGroup(1u);
+        overText->getComponent<jop::Text>()->setString("Game over!").setColor(jop::Color::Purple);
+    }
+    {
+        jop::WeakReference<jop::Object> scoreText = createChild("scoreText");
+        scoreText->setScale(0.01f).setPosition(s_playerStartPos);
+        scoreText->createComponent<jop::Text>(getRenderer()).setRenderGroup(1u);
+        scoreText->getComponent<jop::Text>()->setString("Your score: " + std::to_string(g_score)).setColor(jop::Color::Orange);
+    }
     hasEnded = true;
 }
 
 void tehGame::init()
 {
-    Characters* c;
 
     m_world.createWorld();
-    m_chars = c->createEnemies(g_density, m_world.m_groundP);
-    m_chars.insert(m_chars.begin(), c->createPlayer());
+    m_chars.push_back(CharacterFactory::createCharacter(*this, CharacterType::playerC, s_playerStartPos));
     m_playerPtr = static_cast<Player*>(m_chars[0]);
     m_cam->setPosition(s_playerStartPos.x, s_playerStartPos.y, s_playerStartPos.z);
+
+    auto r = []()
+    {
+        static jop::Randomizer rand;
+        return rand.range(0.f, 1.f);
+    };
+
+
+
+    unsigned int amount = m_world.m_groundP.size() / g_density;
+    auto& w = m_world.m_groundP;
+    unsigned int index;
+
+    for (unsigned int i = 3u; i < amount; ++i)
+    {
+        index = i + g_density * i;
+
+        if (index >= w.size())
+            break;
+
+        m_chars.push_back(CharacterFactory::createCharacter(
+            *this,
+            r() < 0.5f ? CharacterType::staticC : CharacterType::targetC,
+            glm::vec3(
+            w[index].x + (r() * 1.5f),
+            w[index].y + (r() * 1.5f),
+            s_playerStartPos.z)));
+    }
+}
+
+void tehGame::createUI()
+{
+    auto p = m_cam->getGlobalPosition();
+    {
+        jop::WeakReference<jop::Object> score = createChild("scoreText");
+        score->setScale(0.02f);
+        score->createComponent<jop::Text>(getRenderer());
+        score->getComponent<jop::Text>()->setString(std::to_string(g_score)).setColor(jop::Color::Purple);
+    }
+    {
+        jop::WeakReference<jop::Object> health = createChild("healthText");
+        health->setScale(0.02f);
+        health->createComponent<jop::Text>(getRenderer());
+        health->getComponent<jop::Text>()->setString(std::to_string(m_playerPtr->getHealth())).setColor(jop::Color::Green);
+    }
 }
 
 void tehGame::destroy()
 {
-    ResourceManager::unload("ground");
-    Engine::createScene<tehGame>();
+    jop::ResourceManager::unload("ground");
+    jop::Engine::createScene<tehGame>();
 }
 
 void getResources()
 {
+    using namespace jop;
+
     static const jop::RigidBody2D::ConstructInfo2D bulletInfo(jop::ResourceManager::getNamed<jop::ConeShape2D>("bullet", 0.2f, 0.6f), jop::RigidBody2D::Type::Dynamic, 0.2f);
     c_bulletInfo = &bulletInfo;
 
@@ -289,13 +384,20 @@ void getResources()
 
     c_animAtlasPlayer = &ResourceManager::get<AnimationAtlas>("tehGame/art_spsh_small.png", glm::uvec2(4u, 3u), glm::uvec2(0u, 0u), glm::uvec2(3399u, 3487u)); //glm::uvec2(7650u, 8134u));
 
-    c_bulletModel = &Model(
+    static const Model bulletmodel(
         ResourceManager::getNamed<RectangleMesh>("bulletmesh", glm::vec2(0.35f, 0.75f)),
-        ResourceManager::getEmpty<Material>("bulletmat", true).setMap(Material::Map::Diffuse, ResourceManager::get<Texture2D>("tehGame/bullet.png", true, false)));
+        ResourceManager::getEmpty<Material>("bulletmat", true).setMap(Material::Map::Diffuse, ResourceManager::get<Texture2D>("tehGame/bullet.png")));
+    c_bulletModel = &bulletmodel;
 
-    c_playerModel = &Model(
+    static const Model playermodel(
         ResourceManager::getNamed<RectangleMesh>("playermesh", glm::vec2(1.f, 2.f)),
-        ResourceManager::getEmpty<Material>("playermat", true).setMap(Material::Map::Diffuse, ResourceManager::get<Texture2D>("tehGame/player.png", true, false)));
+        ResourceManager::getEmpty<Material>("playermat", true).setMap(Material::Map::Diffuse, ResourceManager::get<Texture2D>("tehGame/player.png")));
+    c_playerModel = &playermodel;
+
+    static const Model crosshairmodel(
+        ResourceManager::getNamed<CircleMesh>("crosshairmesh", 0.5f, 15u),
+        ResourceManager::getEmpty<Material>("crosshairmat", true).setMap(Material::Map::Diffuse, ResourceManager::get<Texture2D>("tehGame/crosshair.png")));
+    c_crosshairModel = &crosshairmodel;
 
 }
 
@@ -303,8 +405,8 @@ void getResources()
 int main(int argc, char* argv[])
 {
 #ifdef JOP_OS_ANDROID
-    SettingManager::setDefaultDirectory("defconf");
-    SettingManager::setOverrideWithDefaults();
+    jop::SettingManager::setDefaultDirectory("defconf");
+    jop::SettingManager::setOverrideWithDefaults();
 #endif
 
     JOP_ENGINE_INIT("MyProject", argc, argv);
@@ -315,11 +417,11 @@ int main(int argc, char* argv[])
 
     getResources();
 
-    Engine::getSubsystem<Window>()->setEventHandler<jd::EventHandler>();
+    jop::Engine::getSubsystem<jop::Window>()->setEventHandler<jd::EventHandler>();
 
     g_screenSize = jop::Engine::getMainRenderTarget().getSize();
 
-    Engine::createScene<tehGame>();
+    jop::Engine::createScene<tehGame>();
 
     return JOP_MAIN_LOOP;
 }
