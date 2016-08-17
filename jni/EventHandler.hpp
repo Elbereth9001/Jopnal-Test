@@ -47,8 +47,15 @@ namespace jd
             if (key == Keyboard::Key::Enter)
             {
                 auto& s = static_cast<tehGame&>(Engine::getCurrentScene());
-                s.hasEnded ? s.destroy() :
-                    Engine::setState(Engine::getState() == Engine::State::Running ? Engine::State::RenderOnly : Engine::State::Running);
+                if (s.hasEnded)
+                    s.destroy();
+                else
+                {
+                    //Showmenu must be called here, doesn't get called from update when RenderOnly
+                    s.m_isPaused = !s.m_isPaused;
+                    s.showMenu(s.m_isPaused);
+                }
+                    
             }
         }
     };

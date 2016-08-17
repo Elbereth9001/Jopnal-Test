@@ -27,7 +27,7 @@ public:
     ////////////////////////////////
 
     Player(jop::Scene& scene) :
-        Characters(scene, CharacterType::playerC, s_immuneCD, s_shootPlayerCD, s_jumpCD, g_healthPlayerStart, scene.createChild("player")),
+        Characters(scene, CharacterType::playerC, s_immuneCD, s_shootPlayerCD, s_jumpCD, g_health, scene.createChild("player")),
 
         m_crosshair(scene.createChild("crosshair")),
         m_crossHairLastDir(1.f, 0.f, 0.f)

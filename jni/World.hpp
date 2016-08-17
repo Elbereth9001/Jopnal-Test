@@ -10,19 +10,19 @@ class SceneWorld
     jop::WeakReference<jop::Object> m_ground;
 
 public:
-    
+
     std::vector<glm::vec2> m_groundP;
     unsigned int m_levelLength;
     float m_endPoint;
 
-    SceneWorld(jop::Scene& sceneRef):
+    SceneWorld(jop::Scene& sceneRef) :
         m_scene(sceneRef),
         m_ground(m_scene.createChild("ground")),
         m_groundP(),
         m_levelLength(1u),
         m_endPoint(0.f)
     {}
-    
+
     void createWorld();
 
 };
@@ -63,6 +63,26 @@ void SceneWorld::createWorld()
     }
 #endif
 
+    //Background
+#if 1
+
+    float meanX(0.f);
+    float meanY(0.f);
+
+    for (auto itr : m_groundP)
+    {
+        meanX += itr.x;
+        meanY += itr.y;
+    }
+
+    meanX /= m_groundP.size();
+    meanY /= m_groundP.size();
+
+    m_ground->createChild("bg")->setPosition(glm::vec3(meanX, meanY, -0.1f));
+    m_ground->findChild("bg")->createComponent<jop::Drawable>(m_scene.getRenderer()).setModel(g_level % 2u ? *c_backgroundModel2 : *c_backgroundModel1 );
+
+#endif
+
     //Ground coloring: gradient: top = White, bottom = green
 #if 1
     {
@@ -92,10 +112,10 @@ void SceneWorld::createWorld()
             colorHere = std::max(0.f, std::min(1.f, 1.f + (((m_groundP[i].y + s_colorLimitBottom) / s_colorLimitTop) * 0.5f)));
             colorNext = std::max(0.f, std::min(1.f, 1.f + (((m_groundP[i + 1u].y + s_colorLimitBottom) / s_colorLimitTop) * 0.5f)));
 
-            meshPoints.emplace_back(glm::vec3(m_groundP[i].x, m_groundP[i].y, 0.f), glm::vec4(colorHere, 1.f, colorHere, 1.f));                 // current point = left
-            meshPoints.emplace_back(glm::vec3(m_groundP[i].x, s_minWorldOffsetY * s_maxWorldLength, 0.f), colorBottom);                         // bottom left
-            meshPoints.emplace_back(glm::vec3(m_groundP[i + 1u].x, s_minWorldOffsetY * s_maxWorldLength, 0.f), colorBottom);                    // bottom right
-            meshPoints.emplace_back(glm::vec3(m_groundP[i + 1u].x, m_groundP[i + 1u].y, 0.f), glm::vec4(colorNext, 1.f, colorNext, 1.f));       // next point = right
+            meshPoints.emplace_back(glm::vec3(m_groundP[i].x, m_groundP[i].y, 0.1f), glm::vec4(colorHere, 1.f, colorHere, 1.f));                 // current point = left
+            meshPoints.emplace_back(glm::vec3(m_groundP[i].x, s_minWorldOffsetY * s_maxWorldLength, 0.1f), colorBottom);                         // bottom left
+            meshPoints.emplace_back(glm::vec3(m_groundP[i + 1u].x, s_minWorldOffsetY * s_maxWorldLength, 0.1f), colorBottom);                    // bottom right
+            meshPoints.emplace_back(glm::vec3(m_groundP[i + 1u].x, m_groundP[i + 1u].y, 0.1f), glm::vec4(colorNext, 1.f, colorNext, 1.f));       // next point = right
 
         }
         auto& mesh = jop::ResourceManager::getEmpty<jop::Mesh>("groundMesh");
