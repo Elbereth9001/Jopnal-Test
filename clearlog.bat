@@ -1,0 +1,1 @@
+call adb logcat -c

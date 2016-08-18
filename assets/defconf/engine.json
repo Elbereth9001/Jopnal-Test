@@ -1,0 +1,114 @@
+{
+    "Settings": {
+        "bAutoUpdate": true
+    },
+    "Debug": {
+        "Console": {
+            "bEnabled": true,
+            "uVerbosity": 3,
+            "bReduceSpam": false,
+            "bLogToFile": true,
+            "bDebuggerOutput": true
+        },
+        "bPrintShaderUniformLocationErrors": true,
+        "bValidateShaders": true,
+        "bPrintOpenGLExtensions": true,
+        "bPrintOpenGLCapabilities": true,
+        "bPrintEGLExtensions": true
+    },
+    "Filesystem": {
+        "bErrorChecks": true
+    },
+    "DefaultWindow": {
+        "uSizeX": 1600,
+        "uSizeY": 900,
+        "sTitle": "MyProject",
+        "uMode": 1,
+        "uMultisampling": 0,
+        "uFrameLimit": 0,
+        "bVisible": true,
+        "bVerticalSync": true,
+        "bDebugContext": false,
+        "sClearColor": "000000FF"
+    },
+    "Graphics": {
+        "OpenGL": {
+            "uVersionMajor": 3,
+            "uVersionMinor": 3
+        },
+        "MainRenderTarget": {
+            "fResolutionScale": 1.0,
+            "bUseWindow": false,
+            "sClearColor": "000000FF",
+            "bHDR": false
+        },
+        "Texture": {
+            "uDefaultFilterMode": 0,
+            "uDefaultRepeatMode": 0,
+            "fDefaultAnisotropyLevel": 16.0,
+            "fDefaultBorderColor": "FFFFFFFF"
+        },
+        "Postprocessor": {
+            "Tonemapping": {
+                "bEnabled": false,
+                "fExposure": 1.0
+            },
+            "Bloom": {
+                "bEnabled": false,
+                "fThreshold": 1.0,
+                "uKernelSize": 5,
+                "fSubThresholdExponent": 4.0
+            },
+            "bEnable": false,
+            "GammaCorrection": {
+                "bEnabled": true,
+                "fGamma": 2.200000047683716
+            },
+            "Dithering": {
+                "bEnabled": false
+            }
+        },
+        "Shading": {
+            "Material": {
+                "sDefaultAmbient": "000000FF",
+                "sDefaultDiffuse": "FFFFFFFF",
+                "sDefaultSpecular": "000000FF",
+                "sDefaultEmission": "000000FF"
+            },
+            "uMaxPointLights": 8,
+            "uMaxDirectionalLights": 2,
+            "uMaxSpotLights": 2,
+            "Light": {
+                "sDefaultAmbient": "000000FF",
+                "sDefaultDiffuse": "FFFFFFFF",
+                "sDefaultSpecular": "FFFFFFFF"
+            },
+            "fLightCullThreshold": 0.0010000000474974514
+        },
+        "DefaultPerspectiveCamera": {
+            "fClipFar": 9999999.0,
+            "fClipNear": 1.0,
+            "fFovYRad": 0.9599310755729676
+        },
+        "DefaultOrthographicCamera": {
+            "fClipFar": 1.0,
+            "fClipNear": -1.0
+        },
+        "Font": {
+            "uTextureInitialSize": 256
+        }
+    },
+    "Physics": {
+        "DefaultWorld": {
+            "fGravity": -9.8100004196167
+        },
+        "uUpdateFrequency": 50
+    },
+    "bForceProcessHighPriority": true,
+    "Input": {
+        "Controller": {
+            "uMaxControllers": 1,
+            "fDeadzone": 0.10000000149011612
+        }
+    }
+}
